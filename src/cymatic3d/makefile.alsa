@@ -6,7 +6,7 @@ MARSYAS_DIR=../marsyas/
 CFLAGS=-D__LINUX_ALSA__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O3 -c -mssse3
 LIBS=-L/usr/X11R6/lib -lglut -lGL -lGLU -lasound -lXmu -lX11 -lXext -lXi -lm -lsndfile -lpthread
 
-OBJS=chuck_fft.o RtAudio.o Thread.o sndpeek.o Stk.o \
+OBJS=chuck_fft.o RtAudio.o Thread.o cymatic3d.o Stk.o \
 	Centroid.o DownSampler.o Flux.o LPC.o MFCC.o RMS.o Rolloff.o \
 	System.o fvec.o AutoCorrelation.o Communicator.o Hamming.o \
 	MagFFT.o NormRMS.o MarSignal.o fmatrix.o

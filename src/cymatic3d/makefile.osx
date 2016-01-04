@@ -7,7 +7,7 @@ LIBS=-framework CoreAudio -framework CoreMIDI -framework CoreFoundation\
 	-framework OpenGL -framework GLUT -framework Foundation \
 	-framework AppKit
 
-OBJS=chuck_fft.o RtAudio.o Thread.o sndpeek.o Stk.o util_sndfile.o \
+OBJS=chuck_fft.o RtAudio.o Thread.o cymatic3d.o Stk.o util_sndfile.o \
 	Centroid.o DownSampler.o Flux.o LPC.o MFCC.o RMS.o Rolloff.o \
 	System.o fvec.o AutoCorrelation.o Communicator.o Hamming.o \
 	MagFFT.o NormRMS.o MarSignal.o fmatrix.o

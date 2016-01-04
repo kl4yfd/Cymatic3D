@@ -6,7 +6,7 @@ CFLAGS=-D__WINDOWS_DS__ -D__WINDOWS_PTHREAD__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O
 LIBS=-ldsound -ldxguid -lwinmm -lpthread -lopengl32 -lglu32 -lglut32
 
 TARGET=sndpeek
-OBJS=chuck_fft.o RtAudio.o Thread.o sndpeek.o Stk.o util_sndfile.o \
+OBJS=chuck_fft.o RtAudio.o Thread.o cymatic3d.o Stk.o util_sndfile.o \
 	Centroid.o DownSampler.o Flux.o LPC.o MFCC.o RMS.o Rolloff.o \
 	System.o fvec.o AutoCorrelation.o Communicator.o Hamming.o \
 	MagFFT.o NormRMS.o MarSignal.o fmatrix.o

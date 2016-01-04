@@ -6,7 +6,7 @@ CFLAGS=-D__LINUX_OSS__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O3 -c
 LIBS=-L/usr/X11R6/lib -lpthread -lstdc++ -lglut -lGL -lGLU -lXmu -lX11 -lXext -lXi -lm -lsndfile
 
 TARGE=sndpeek
-OBJS=chuck_fft.o RtAudio.o Thread.o sndpeek.o Stk.o \
+OBJS=chuck_fft.o RtAudio.o Thread.o cymatic3d.o Stk.o \
 	Centroid.o DownSampler.o Flux.o LPC.o MFCC.o RMS.o Rolloff.o \
 	System.o fvec.o AutoCorrelation.o Communicator.o Hamming.o \
 	MagFFT.o NormRMS.o MarSignal.o fmatrix.o

@@ -1,10 +1,12 @@
 /*----------------------------------------------------------------------------
-    RT3Dv - real-time audio visualization tool
+    Cymatic3D - real-time cymatics software
 
     Copyright (c) 2004 Ge Wang, Perry R. Cook, Ananya Misra.
         All rights reserved.
         http://soundlab.cs.princeton.edu/
+        
    Copyright (c) 2014-2015 John A Phelps
+	https://github.com/kl4yfd/Cymatic3D
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -327,9 +329,9 @@ GLuint g_wf_index = 0;
 void help()
 {
     fprintf( stderr, "----------------------------------------------------\n" );
-    fprintf( stderr, "== Real Time 3D Visualizer (RT3Dv) ==\n" );
-    fprintf( stderr, " Copyright 2014-2015 John A Phelps " );
-    ///fprintf( stderr, " See: http://soundlab.cs.princeton.edu/\n" );
+    fprintf( stderr, "== CYMATIC3D ==\n" );
+    fprintf( stderr, " Copyright 2014-2016 John A Phelps " );
+    fprintf( stderr, " See: https://github.com/kl4yfd/Cymatic3D\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "'h' - print this help message\n" );
     fprintf( stderr, "'p' - print current settings to console\n" );
@@ -378,7 +380,7 @@ void help()
 //-----------------------------------------------------------------------------
 void usage()
 {
-    fprintf( stderr, "usage: RT3Dv  --[options] [filename]\n" );
+    fprintf( stderr, "usage: cymatic3d  --[options] [filename]\n" );
     fprintf( stderr, "  ON/OFF options: fullscreen|waveform|lissajous|waterfall|\n" );
     fprintf( stderr, "                  dB|features|fallcolors|backward|showtime|\n" );
     fprintf( stderr, "                  freeze\n" );
@@ -388,9 +390,9 @@ void usage()
     fprintf( stderr, "   other options: nodisplay|print\n" );
     fprintf( stderr, "\n" );
     fprintf( stderr, "example:\n" );
-    fprintf( stderr, "    RT3Dv --fullscreen:ON --features:OFF --spacing:.05\n" );
+    fprintf( stderr, "    cymatic3d --fullscreen:ON --features:OFF --spacing:.05\n" );
     fprintf( stderr, "\n" );
-    fprintf( stderr, "RT3Dv version: 1.3b\n" );
+    fprintf( stderr, "cymatic3d version: 0.8 BETA\n" );
     fprintf( stderr, "\n" );
 }
 
@@ -498,7 +500,7 @@ int main( int argc, char ** argv )
                 g_wf_delay_ratio = atof( argv[i]+10 );
                 if( g_wf_delay_ratio < 0 || g_wf_delay_ratio >= 1 )
                 {
-                    fprintf( stderr, "[RT3Dv]: --preview requires 0 <= value < 1...\n" );
+                    fprintf( stderr, "[Cymatic3d]: --preview requires 0 <= value < 1...\n" );
                     usage();
                     return -1;
                 }
@@ -514,7 +516,7 @@ int main( int argc, char ** argv )
             }
             else
             {
-                fprintf( stderr, "[RT3Dv]: unrecognized option '%s'...\n", argv[i] );
+                fprintf( stderr, "[Cymatic3d]: unrecognized option '%s'...\n", argv[i] );
                 usage();
                 return -1;
             }
@@ -523,7 +525,7 @@ int main( int argc, char ** argv )
         {
             if( g_filename )
             {
-                fprintf( stderr, "[RT3Dv]: multiple filenames specified...\n" );
+                fprintf( stderr, "[Cymatic3d]: multiple filenames specified...\n" );
                 usage();
                 return -2;
             }
@@ -568,7 +570,7 @@ int main( int argc, char ** argv )
         // set the window postion
         glutInitWindowPosition( 100, 100 );
         // create the window
-        glutCreateWindow( "Real Time 3D Visualizer (RT3Dv)" );
+        glutCreateWindow( "Cymatic3d: The Sacred Geometry of Sound " );
         // full screen
         if( g_fullscreen )
             glutFullScreen();
@@ -598,7 +600,7 @@ int main( int argc, char ** argv )
     // intialize real-time audio
     if( !initialize_audio( ) )
     {
-        fprintf( stderr, "[RT3Dv]: exiting...\n" );
+        fprintf( stderr, "[Cymatic3d]: exiting...\n" );
         return -3;
     }
 
@@ -623,7 +625,7 @@ int main( int argc, char ** argv )
                 if( !count )
                 {
                     g_file_running = FALSE;
-                    fprintf( stderr, "[RT3Dv]: file not running...\n" );
+                    fprintf( stderr, "[Cymatic3d]: file not running...\n" );
                 }
             }
 
@@ -779,13 +781,13 @@ bool initialize_audio( )
     // read from file
     if( g_filename )
     {
-        fprintf( stderr, "[RT3Dv]: opening %s...\n", g_filename );
+        fprintf( stderr, "[Cymatic3d]: opening %s...\n", g_filename );
         // attempt to open file
         g_sf = sf_open( g_filename, SFM_READ, &g_sf_info );
         if( !g_sf )
         {
             // exception
-            fprintf( stderr, "[RT3Dv]: error: cannot open '%s'...\n", g_filename );
+            fprintf( stderr, "[Cymatic3d]: error: cannot open '%s'...\n", g_filename );
             return false;
         }
 
@@ -793,7 +795,7 @@ bool initialize_audio( )
         g_file_running = TRUE;
 
         // set srate from the WvIn
-        fprintf( stderr, "[RT3Dv]: setting sample rate to %d\n", g_srate );
+        fprintf( stderr, "[Cymatic3d]: setting sample rate to %d\n", g_srate );
         g_srate = g_sf_info.samplerate;
     }
     else
@@ -817,15 +819,15 @@ bool initialize_audio( )
             if( bufsize != g_buffer_size )
             {
                 // potential problem
-                fprintf( stderr, "[RT3Dv]: warning: using different buffer sizes: %i : %i\n",
+                fprintf( stderr, "[Cymatic3d]: warning: using different buffer sizes: %i : %i\n",
                     bufsize, g_buffer_size );
             }
         }
         catch( StkError & e )
         {
             // exception
-            fprintf( stderr, "[RT3Dv](via RtAudio): %s\n", e.getMessage() );
-            fprintf( stderr, "[RT3Dv]: error: cannot open audio device for capture/playback...\n" );
+            fprintf( stderr, "[Cymatic3d](via RtAudio): %s\n", e.getMessage() );
+            fprintf( stderr, "[Cymatic3d]: error: cannot open audio device for capture/playback...\n" );
             return false;
         }
 
@@ -999,11 +1001,11 @@ void specialFunc( int key, int x, int y )
 	
       case GLUT_KEY_UP:
         g_x_inc += g_inc_val_kb;
-        fprintf( stderr, "[RT3Dv]: yview:%f\n", g_eye_y );
+        fprintf( stderr, "[Cymatic3d]: yview:%f\n", g_eye_y );
     break;
     case GLUT_KEY_DOWN:
         g_x_inc -= g_inc_val_kb;
-        fprintf( stderr, "[RT3Dv]: yview:%f\n", g_eye_y );
+        fprintf( stderr, "[Cymatic3d]: yview:%f\n", g_eye_y );
     break;
     
       case GLUT_KEY_HOME :
@@ -1053,75 +1055,75 @@ void keyboardFunc( unsigned char key, int x, int y )
     {
     case '[':
         g_z_inc += g_inc_val_kb;
-        fprintf( stderr, "[RT3Dv]: zview:%f\n", g_z_inc );
+        fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_z_inc );
 	break;
     case ']':
         g_z_inc -= g_inc_val_kb;
-        fprintf( stderr, "[RT3Dv]: zview:%f\n", g_z_inc );
+        fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_z_inc );
 	break;    
     case '\\':
         g_z_inc = 120;
-        fprintf( stderr, "[RT3Dv]: zview:%f\n", g_z_inc );
+        fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_z_inc );
 	break;
     case '{':
         g_zoom -= g_inc_val_kb;
-        fprintf( stderr, "[RT3Dv]: zview:%f\n", g_zoom );
+        fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_zoom );
 	break;
     case '}':
         g_zoom += g_inc_val_kb;
-        fprintf( stderr, "[RT3Dv]: zview:%f\n", g_zoom );
+        fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_zoom );
 	break;
     case '?':
         visualization++;
 	if ( visualization > 30) visualization = 0;
-        fprintf( stderr, "[RT3Dv]: visualization:%d\n", visualization );
+        fprintf( stderr, "[Cymatic3d]: visualization:%d\n", visualization );
 	break;
     case '/':
         visualization--;
 	if ( visualization < 0) visualization = 0;
-        fprintf( stderr, "[RT3Dv]: visualization:%d\n", visualization );
+        fprintf( stderr, "[Cymatic3d]: visualization:%d\n", visualization );
     case '<':
         rendertype--;
 	if ( rendertype < 0) rendertype = 0;
-        fprintf( stderr, "[RT3Dv]: rendertype:%d\n", rendertype );
+        fprintf( stderr, "[Cymatic3d]: rendertype:%d\n", rendertype );
 	break;
     case '>':
         rendertype++;
 	if ( rendertype > 8) rendertype = 0;
-        fprintf( stderr, "[RT3Dv]: rendertype:%d\n", rendertype );
+        fprintf( stderr, "[Cymatic3d]: rendertype:%d\n", rendertype );
     break;
     case 'j':
         g_z += g_dz;
-        fprintf( stderr, "[RT3Dv]: zpos:%f\n", g_z );
+        fprintf( stderr, "[Cymatic3d]: zpos:%f\n", g_z );
     break;
     case 'k':
         g_z -= g_dz;
-        fprintf( stderr, "[RT3Dv]: zpos:%f\n", g_z );
+        fprintf( stderr, "[Cymatic3d]: zpos:%f\n", g_z );
     break;
     case 'u':
         g_space *= 1.02f;
-        fprintf( stderr, "[RT3Dv]: spacing:%f\n", g_space );
+        fprintf( stderr, "[Cymatic3d]: spacing:%f\n", g_space );
     break;
     case 'i':
         g_space *= .98f;
-        fprintf( stderr, "[RT3Dv]: spacing:%f\n", g_space );
+        fprintf( stderr, "[Cymatic3d]: spacing:%f\n", g_space );
     break;
     case '1':
         g_waveform = !g_waveform;
-        fprintf( stderr, "[RT3Dv]: waveform:%s\n", g_waveform ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: waveform:%s\n", g_waveform ? "ON" : "OFF" );
     break;
     case '3':
     case 'w':
         g_wutrfall = !g_wutrfall;
-        fprintf( stderr, "[RT3Dv]: waterfall:%s\n", g_wutrfall ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: waterfall:%s\n", g_wutrfall ? "ON" : "OFF" );
     break;
     case 'd':
         g_usedb = !g_usedb;
-        fprintf( stderr, "[RT3Dv]: dB:%s\n", g_usedb ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: dB:%s\n", g_usedb ? "ON" : "OFF" );
     break;
     case '4':
         g_draw_features = !g_draw_features;
-        fprintf( stderr, "[RT3Dv]: features:%s\n", g_draw_features ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: features:%s\n", g_draw_features ? "ON" : "OFF" );
     break;
     case 'q':
         ///exit( 0 );
@@ -1129,33 +1131,33 @@ void keyboardFunc( unsigned char key, int x, int y )
     break;
     case '_':
         g_time_scale *= .99f;
-        fprintf( stderr, "[RT3Dv]: timescale:%f\n", g_time_scale );
+        fprintf( stderr, "[Cymatic3d]: timescale:%f\n", g_time_scale );
     break;
     case '+':
         g_time_scale *= 1.01f;
-        fprintf( stderr, "[RT3Dv]: timescale:%f\n", g_time_scale ); 
+        fprintf( stderr, "[Cymatic3d]: timescale:%f\n", g_time_scale ); 
     break;
     case '-':
         g_freq_scale *= .99f;
-        fprintf( stderr, "[RT3Dv]: freqscale:%f\n", g_freq_scale );
+        fprintf( stderr, "[Cymatic3d]: freqscale:%f\n", g_freq_scale );
     break;
     case '=':
         g_freq_scale *= 1.01f;
-        fprintf( stderr, "[RT3Dv]: freqscale:%f\n", g_freq_scale );
+        fprintf( stderr, "[Cymatic3d]: freqscale:%f\n", g_freq_scale );
     break;
     
     case 'V':
         if( g_time_view > 1 )
             g_time_view--;
 
-        fprintf( stderr, "[RT3Dv]: time domain %i samples", g_buffer_size / g_time_view );
+        fprintf( stderr, "[Cymatic3d]: time domain %i samples", g_buffer_size / g_time_view );
         fprintf( stderr, g_time_view == 1 ? " - (MAX)\n" : "\n" );
     break;
     case 'C':
         if( g_time_view < 32 )
             g_time_view++;
 
-        fprintf( stderr, "[RT3Dv]: time domain %i samples", g_buffer_size / g_time_view );
+        fprintf( stderr, "[Cymatic3d]: time domain %i samples", g_buffer_size / g_time_view );
         fprintf( stderr, g_time_view == 32 ? " - (MIN)\n" : "\n" );
     break;
 
@@ -1174,43 +1176,43 @@ void keyboardFunc( unsigned char key, int x, int y )
             glutReshapeWindow( g_last_width, g_last_height );
 
         g_fullscreen = !g_fullscreen;
-        fprintf( stderr, "[RT3Dv]: fullscreen:%s\n", g_fullscreen ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: fullscreen:%s\n", g_fullscreen ? "ON" : "OFF" );
     }
     break;
     case 'm':
         g_mute = !g_mute;
-        fprintf( stderr, "[RT3Dv]: mute:%s\n", g_mute ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: mute:%s\n", g_mute ? "ON" : "OFF" );
     break;
     case 'x':
         if( g_sf )
         {
             g_restart = TRUE;
-            fprintf( stderr, "[RT3Dv]: restarting file...\n" );
+            fprintf( stderr, "[Cymatic3d]: restarting file...\n" );
         }
     break;
     case '2':
         g_lissajous = !g_lissajous;
-        fprintf( stderr, "[RT3Dv]: lissajous:%s\n", g_lissajous ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: lissajous:%s\n", g_lissajous ? "ON" : "OFF" );
     break;
     case 'l':
         g_lissajous_scale *= .95f;
-        fprintf( stderr, "[RT3Dv]: lissscale:%f\n", g_lissajous_scale );
+        fprintf( stderr, "[Cymatic3d]: lissscale:%f\n", g_lissajous_scale );
     break;
     case 'L':
         g_lissajous_scale *= 1.05f;
-        fprintf( stderr, "[RT3Dv]: lissscale:%f\n", g_lissajous_scale );
+        fprintf( stderr, "[Cymatic3d]: lissscale:%f\n", g_lissajous_scale );
     break;
     case 'y':
         g_delay -= 1;
         if( g_delay < 0 )
             g_delay = 1;
-        fprintf( stderr, "[RT3Dv]: lissdelay = %i\n", g_delay );
+        fprintf( stderr, "[Cymatic3d]: lissdelay = %i\n", g_delay );
     break;
     case 'Y':
         g_delay += 1;
         if( g_delay > g_buffer_size )
             g_delay = g_buffer_size;
-        fprintf( stderr, "[RT3Dv]: lissdelay = %i\n", g_delay );
+        fprintf( stderr, "[Cymatic3d]: lissdelay = %i\n", g_delay );
     break;
     case 'z':
     case 'f':
@@ -1218,72 +1220,72 @@ void keyboardFunc( unsigned char key, int x, int y )
 		g_freeze = g_pause = true;
 		g_freezecycle = false;
 	} else {
-		fprintf( stderr, "[RT3Dv]: free(ze)!\n" );
+		fprintf( stderr, "[Cymatic3d]: free(ze)!\n" );
 		g_freeze = g_pause = false;
 	}
     break;
     case 'F':
       	if (g_freezecycle == true) {
 		g_freezecycle = g_freeze = false;
-		fprintf( stderr, "[RT3Dv]: Freeze Cycle OFF!\n" );
+		fprintf( stderr, "[Cymatic3d]: Freeze Cycle OFF!\n" );
 	} else {
 		g_freezecycle = !g_freezecycle;
-		fprintf( stderr, "[RT3Dv]: Freeze Cycle ON!\n" );
+		fprintf( stderr, "[Cymatic3d]: Freeze Cycle ON!\n" );
 	}
     break;
     case 'v':
         g_log_factor *= .98; //.99985;
         g_log_space = compute_log_spacing( g_fft_size / 2, g_log_factor );
-        fprintf( stderr, "[RT3Dv]: logfactor:%f\n", g_log_factor );
+        fprintf( stderr, "[Cymatic3d]: logfactor:%f\n", g_log_factor );
     break;
     case 'c':
         g_log_factor /= .98; //.99985;
         g_log_space = compute_log_spacing( g_fft_size / 2, g_log_factor );
-        fprintf( stderr, "[RT3Dv]: logfactor:%f\n", g_log_factor );
+        fprintf( stderr, "[Cymatic3d]: logfactor:%f\n", g_log_factor );
     break;
     case 'r':
         g_rainbow = !g_rainbow;
-        fprintf( stderr, "[RT3Dv]: fallcolors:%s\n", g_rainbow ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: fallcolors:%s\n", g_rainbow ? "ON" : "OFF" );
     break;
     case 't':
         g_show_time = !g_show_time; 
-        fprintf( stderr, "[RT3Dv]: show time:%s\n", g_show_time ? "ON" : "OFF" ); 
+        fprintf( stderr, "[Cymatic3d]: show time:%s\n", g_show_time ? "ON" : "OFF" ); 
     break;
     case 'b':
         g_backwards = !g_backwards;
-        fprintf( stderr, "[RT3Dv]: backward:%s\n", g_backwards ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: backward:%s\n", g_backwards ? "ON" : "OFF" );
     break;
 
     case 'p':
         fprintf( stderr, "----------------------------------------------------\n" );
         fprintf( stderr, " current settings...\n" );
         fprintf( stderr, "----------------------------------------------------\n" );
-        fprintf( stderr, "[RT3Dv]: waveform:%s\n", g_waveform ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: lissajous:%s\n", g_lissajous ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: waterfall:%s\n", g_wutrfall ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: features:%s\n", g_draw_features ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: fallcolors:%s\n", g_rainbow ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: backward:%s\n", g_backwards ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: fullscreen:%s\n", g_fullscreen ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: dB:%s\n", g_usedb ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: mute:%s\n", g_mute ? "ON" : "OFF" );
-        fprintf( stderr, "[RT3Dv]: showtime:%s\n", g_show_time ? "ON" : "OFF" ); 
-        fprintf( stderr, "[RT3Dv]: freeze:%s\n", g_freeze ? "ON" : "OFF" ); 
-        fprintf( stderr, "[RT3Dv]: timescale:%f\n", g_time_scale ); 
-        fprintf( stderr, "[RT3Dv]: freqscale:%f\n", g_freq_scale );
-        fprintf( stderr, "[RT3Dv]: logfactor:%f\n", g_log_factor );
-        fprintf( stderr, "[RT3Dv]: lissscale:%f\n", g_lissajous_scale );
-        fprintf( stderr, "[RT3Dv]: lissdelay = %i\n", g_delay );
-        fprintf( stderr, "[RT3Dv]: zpos:%f\n", g_z );
-        fprintf( stderr, "[RT3Dv]: dzpos:%f\n", g_dz ); 
-        fprintf( stderr, "[RT3Dv]: spacing:%f\n", g_space );
-        fprintf( stderr, "[RT3Dv]: yview:%f\n", g_eye_y );
-        fprintf( stderr, "[RT3Dv]: depth:%i\n", g_depth );
-        fprintf( stderr, "[RT3Dv]: preview:%f (delay: %i)\n", g_wf_delay_ratio, g_wf_delay);
-        fprintf( stderr, "[RT3Dv]: rotatem:%f\n", g_inc_val_mouse );
-        fprintf( stderr, "[RT3Dv]: rotatek:%f\n", g_inc_val_kb * (INC_VAL_MOUSE/INC_VAL_KB) );
-        fprintf( stderr, "[RT3Dv]: begintime:%f (seconds)\n", g_begintime ); 
-        fprintf( stderr, "[RT3Dv]: ds:%i\n", g_ds ); 
+        fprintf( stderr, "[Cymatic3d]: waveform:%s\n", g_waveform ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: lissajous:%s\n", g_lissajous ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: waterfall:%s\n", g_wutrfall ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: features:%s\n", g_draw_features ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: fallcolors:%s\n", g_rainbow ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: backward:%s\n", g_backwards ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: fullscreen:%s\n", g_fullscreen ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: dB:%s\n", g_usedb ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: mute:%s\n", g_mute ? "ON" : "OFF" );
+        fprintf( stderr, "[Cymatic3d]: showtime:%s\n", g_show_time ? "ON" : "OFF" ); 
+        fprintf( stderr, "[Cymatic3d]: freeze:%s\n", g_freeze ? "ON" : "OFF" ); 
+        fprintf( stderr, "[Cymatic3d]: timescale:%f\n", g_time_scale ); 
+        fprintf( stderr, "[Cymatic3d]: freqscale:%f\n", g_freq_scale );
+        fprintf( stderr, "[Cymatic3d]: logfactor:%f\n", g_log_factor );
+        fprintf( stderr, "[Cymatic3d]: lissscale:%f\n", g_lissajous_scale );
+        fprintf( stderr, "[Cymatic3d]: lissdelay = %i\n", g_delay );
+        fprintf( stderr, "[Cymatic3d]: zpos:%f\n", g_z );
+        fprintf( stderr, "[Cymatic3d]: dzpos:%f\n", g_dz ); 
+        fprintf( stderr, "[Cymatic3d]: spacing:%f\n", g_space );
+        fprintf( stderr, "[Cymatic3d]: yview:%f\n", g_eye_y );
+        fprintf( stderr, "[Cymatic3d]: depth:%i\n", g_depth );
+        fprintf( stderr, "[Cymatic3d]: preview:%f (delay: %i)\n", g_wf_delay_ratio, g_wf_delay);
+        fprintf( stderr, "[Cymatic3d]: rotatem:%f\n", g_inc_val_mouse );
+        fprintf( stderr, "[Cymatic3d]: rotatek:%f\n", g_inc_val_kb * (INC_VAL_MOUSE/INC_VAL_KB) );
+        fprintf( stderr, "[Cymatic3d]: begintime:%f (seconds)\n", g_begintime ); 
+        fprintf( stderr, "[Cymatic3d]: ds:%i\n", g_ds ); 
         fprintf( stderr, "----------------------------------------------------\n" );
     break;
     }
@@ -1293,7 +1295,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         if ( key == 32 ) {
 		g_freezehold = true;
 		g_freeze = true;
-		fprintf( stderr, "[RT3Dv]: freezehold ON\n");
+		fprintf( stderr, "[Cymatic3d]: freezehold ON\n");
 	}
 }
 
@@ -2220,7 +2222,7 @@ void displayFunc( )
         glColor3f( 1, 1, 1 );
 
         // title
-        // draw_string( 0.0f, 0.0f, 0.0f, "RT3Dv + watrfall", .5f );
+        // draw_string( 0.0f, 0.0f, 0.0f, "Cymatic3d + watrfall", .5f );
 
         // time
         if( g_show_time )
