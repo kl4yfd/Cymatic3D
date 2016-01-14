@@ -5,8 +5,9 @@
         All rights reserved.
         http://soundlab.cs.princeton.edu/
         
-   Copyright (c) 2014-2015 John A Phelps
+   Copyright (c) 2014-2016 John A Phelps
 	https://github.com/kl4yfd/Cymatic3D
+	kl4yfd@gmail.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -331,7 +332,7 @@ void help()
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "== CYMATIC3D ==\n" );
     fprintf( stderr, " Copyright 2014-2016 John A Phelps " );
-    fprintf( stderr, " See: https://github.com/kl4yfd/Cymatic3D\n" );
+    fprintf( stderr, " https://github.com/kl4yfd/Cymatic3D\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "'h' - print this help message\n" );
     fprintf( stderr, "'p' - print current settings to console\n" );
@@ -351,21 +352,25 @@ void help()
     fprintf( stderr, "'k' - move spectrum - z\n" );
     fprintf( stderr, "'u' - spacing more!\n" );
     fprintf( stderr, "'i' - spacing less!\n" );
-    fprintf( stderr, "L, R mouse button - rotate left or right\n" );
-    fprintf( stderr, "'[', ']' - rotate up or down\n" );
-    fprintf( stderr, "'-' - scale DOWN the spectrum\n" );
-    fprintf( stderr, "'=' - scale UP the spectrum\n" );
-    fprintf( stderr, "(shift)'-' - scale DOWN the waveform\n" );
-    fprintf( stderr, "(shift)'=' - scale UP the waveform\n" );
+    fprintf( stderr, "'w' - scale DOWN the Waterfall\n" );
+    fprintf( stderr, "'W' - scale UP the Waterfall\n" );
+    fprintf( stderr, "'o' - scale DOWN the Oscope\n" );
+    fprintf( stderr, "'O' - scale UP the Oscope\n" );
+    fprintf( stderr, "'-' - scale DOWN the Cymatic!\n" );
+    fprintf( stderr, "'=' - scale UP the Cymatic!\n" );
     fprintf( stderr, "'c' = LOWER log factor of spectrum display\n" );
     fprintf( stderr, "'v' = RAISE log factor of spectrum display\n" );
     fprintf( stderr, "      (log factor of 1.0 is linear display\n" );
     fprintf( stderr, "(shift)'c' - LOWER amount of viewable waveform\n" );
     fprintf( stderr, "(shift)'v' - RAISE amount of viewable waveform\n" );
-    fprintf( stderr, "'l' - scale DOWN the lissajous!\n" );
-    fprintf( stderr, "'L' - scale UP the lissajous!\n" );
     fprintf( stderr, "'y' - decrease delay for lissajous plot\n" );
     fprintf( stderr, "'Y' - increase delay for lissajous plot\n" );
+    fprintf( stderr, " Up Arrow - rotate up\n" );
+    fprintf( stderr, " Down Arrow  - rotate down\n" );
+    fprintf( stderr, " Left Arrow - rotate right\n" );
+    fprintf( stderr, " Right Arrow  - rotate right\n" );
+    fprintf( stderr, " '['  - Roll Left\n" );
+    fprintf( stderr, " ']'  - Roll Right\n" );
     fprintf( stderr, "'q' - quit\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "\n" );
@@ -1113,7 +1118,6 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: waveform:%s\n", g_waveform ? "ON" : "OFF" );
     break;
     case '3':
-    case 'w':
         g_wutrfall = !g_wutrfall;
         fprintf( stderr, "[Cymatic3d]: waterfall:%s\n", g_wutrfall ? "ON" : "OFF" );
     break;
@@ -1129,21 +1133,21 @@ void keyboardFunc( unsigned char key, int x, int y )
         ///exit( 0 );
         fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
     break;
-    case '_':
+    case 'o':
         g_time_scale *= .99f;
-        fprintf( stderr, "[Cymatic3d]: timescale:%f\n", g_time_scale );
+        fprintf( stderr, "[Cymatic3d]: Oscope Scale:%f\n", g_time_scale );
     break;
-    case '+':
+    case 'O':
         g_time_scale *= 1.01f;
-        fprintf( stderr, "[Cymatic3d]: timescale:%f\n", g_time_scale ); 
+        fprintf( stderr, "[Cymatic3d]: Oscope Scale:%f\n", g_time_scale ); 
     break;
-    case '-':
+    case 'w':
         g_freq_scale *= .99f;
-        fprintf( stderr, "[Cymatic3d]: freqscale:%f\n", g_freq_scale );
+        fprintf( stderr, "[Cymatic3d]: Waterfall Scale:%f\n", g_freq_scale );
     break;
-    case '=':
+    case 'W':
         g_freq_scale *= 1.01f;
-        fprintf( stderr, "[Cymatic3d]: freqscale:%f\n", g_freq_scale );
+        fprintf( stderr, "[Cymatic3d]: Waterfall Scale:%f\n", g_freq_scale );
     break;
     
     case 'V':
@@ -1194,13 +1198,13 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_lissajous = !g_lissajous;
         fprintf( stderr, "[Cymatic3d]: lissajous:%s\n", g_lissajous ? "ON" : "OFF" );
     break;
-    case 'l':
+    case '-':
         g_lissajous_scale *= .95f;
-        fprintf( stderr, "[Cymatic3d]: lissscale:%f\n", g_lissajous_scale );
+        fprintf( stderr, "[Cymatic3d]: Cymatic Scale:%f\n", g_lissajous_scale );
     break;
-    case 'L':
+    case '=':
         g_lissajous_scale *= 1.05f;
-        fprintf( stderr, "[Cymatic3d]: lissscale:%f\n", g_lissajous_scale );
+        fprintf( stderr, "[Cymatic3d]: Cymatic Scale:%f\n", g_lissajous_scale );
     break;
     case 'y':
         g_delay -= 1;
