@@ -183,7 +183,7 @@ GLint g_fft_size = SND_FFT_SIZE;
 int visualization = 0;
 
 // Set default rendertype
-int rendertype = 0;
+int rendertype = 1;
 
 // real-time audio
 RtAudio * g_audio = NULL;
@@ -323,7 +323,7 @@ GLuint g_wf_delay = (GLuint)(g_depth * g_wf_delay_ratio + .5f);
 GLuint g_wf_index = 0;
 
 
-int freezecycle_skipframes = 0;
+int freezecycle_skipframes = 1;
 
 //-----------------------------------------------------------------------------
 // name: help()
@@ -1261,7 +1261,19 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
     break;
     case '^':
-	freezecycle_skipframes = 6;
+	freezecycle_skipframes = 8;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '&':
+	freezecycle_skipframes = 12;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '*':
+	freezecycle_skipframes = 16;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '(':
+	freezecycle_skipframes =22;
         fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
     break;
     case 'v':
@@ -1600,13 +1612,15 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
         
         switch(visualization)
 	{
-	  case 1:
-		glVertex3f( x, y, -x*y/10 ); /// circles + sensitive burst
-		glVertex3f( x, y, sqrt( x*x + y*y )/2.0f * -g_lissajous_scale ); /// circles + sensitive burst	
+	  case 0:
+	    	glVertex3f( x*x, y*y, 0.0f ); /// flash / strobe
+	    	glVertex3f( -x*x, y*y, 0.0f ); /// flash / strobe
+	    	glVertex3f( x*x, -y*y, 0.0f ); /// flash / strobe
+	    	glVertex3f( -x*x, -y*y, 0.0f ); /// flash / strobe
 		break;
 		
 	  case 2:
-  	    	glVertex3f( x, y, 0.0f ); /// square / lightning
+		glVertex3f( x, y, 0.0f ); /// square / lightning
 		glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// circular
 		break;
 		
@@ -1644,11 +1658,10 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		break;
 		
 	  case 10:
-	    	glVertex3f( x*x, y*y, 0.0f ); /// flash / strobe
-	    	glVertex3f( -x*x, y*y, 0.0f ); /// flash / strobe
-	    	glVertex3f( x*x, -y*y, 0.0f ); /// flash / strobe
-	    	glVertex3f( -x*x, -y*y, 0.0f ); /// flash / strobe
-                break;
+		glVertex3f( x, y, -x*y/10 ); /// circles + sensitive burst
+		glVertex3f( x, y, sqrt( x*x + y*y )/2.0f * -g_lissajous_scale ); /// circles + sensitive burst	
+		break;
+		
 		
 	  case 11:
 	    	glTranslatef( 0.0f, -1.2f, 0.0f ); // vertical
