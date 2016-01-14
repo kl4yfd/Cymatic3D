@@ -323,6 +323,8 @@ GLuint g_wf_delay = (GLuint)(g_depth * g_wf_delay_ratio + .5f);
 GLuint g_wf_index = 0;
 
 
+int freezecycle_skipframes = 0;
+
 //-----------------------------------------------------------------------------
 // name: help()
 // desc: ...
@@ -1218,8 +1220,8 @@ void keyboardFunc( unsigned char key, int x, int y )
             g_delay = g_buffer_size;
         fprintf( stderr, "[Cymatic3d]: lissdelay = %i\n", g_delay );
     break;
-    case 'z':
     case 'f':
+    case 'F':
 	if (g_pause == false) {
 		g_freeze = g_pause = true;
 		g_freezecycle = false;
@@ -1228,7 +1230,8 @@ void keyboardFunc( unsigned char key, int x, int y )
 		g_freeze = g_pause = false;
 	}
     break;
-    case 'F':
+    case 'z':
+    case 'Z':
       	if (g_freezecycle == true) {
 		g_freezecycle = g_freeze = false;
 		fprintf( stderr, "[Cymatic3d]: Freeze Cycle OFF!\n" );
@@ -1236,6 +1239,30 @@ void keyboardFunc( unsigned char key, int x, int y )
 		g_freezecycle = !g_freezecycle;
 		fprintf( stderr, "[Cymatic3d]: Freeze Cycle ON!\n" );
 	}
+    break;
+    case '!':
+	freezecycle_skipframes = 1;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '@':
+	freezecycle_skipframes = 2;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '#':
+	freezecycle_skipframes = 3;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '$':
+	freezecycle_skipframes = 4;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '%':
+	freezecycle_skipframes = 5;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case '^':
+	freezecycle_skipframes = 6;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
     break;
     case 'v':
         g_log_factor *= .98; //.99985;
@@ -1296,7 +1323,7 @@ void keyboardFunc( unsigned char key, int x, int y )
     	
 	if (!g_freezehold) g_freezehold_savestate = g_freeze;
 	
-        if ( key == 32 ) {
+        if ( key == 32 ) { // space bar
 		g_freezehold = true;
 		g_freeze = true;
 		fprintf( stderr, "[Cymatic3d]: freezehold ON\n");
@@ -2244,10 +2271,11 @@ void displayFunc( )
         if( g_mute )
             draw_string( 0.95f, 1.05f, -.2f, "muted... (press m to unmute)", .4f );
 	
-	/// Pause to better see details
-        if (g_freezecycle) {
+	/// Pause for a few frames to better see details (eye-time)
+	/// only while NOT holding the space bar to freeze
+        if (g_freezecycle && !g_freezehold) {
 		static unsigned int freezecounter = 0;
-		if (freezecounter++ < 1) {
+		if (freezecounter++ < freezecycle_skipframes) {
 			g_freeze = true;
 		} else {
 			g_freeze = false;
