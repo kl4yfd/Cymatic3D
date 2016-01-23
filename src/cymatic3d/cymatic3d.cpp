@@ -333,13 +333,13 @@ void help()
 {
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "== CYMATIC3D ==\n" );
-    fprintf( stderr, " Copyright 2014-2016 John A Phelps " );
+    fprintf( stderr, " Copyright 2014-2016 John A Phelps\n " );
     fprintf( stderr, " https://github.com/kl4yfd/Cymatic3D\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "'h' - print this help message\n" );
-    fprintf( stderr, "'p' - print current settings to console\n" );
-    fprintf( stderr, "'s' - toggle fullscreen\n" );
-    fprintf( stderr, "'f' - freeze frame! (can still rotate/scale)\n" );
+    fprintf( stderr, "'s' - print current settings to console\n" );
+    fprintf( stderr, "'f' - toggle fullscreen\n" );
+    fprintf( stderr, "'p' - pause frame! (can still rotate/scale)\n" );
     fprintf( stderr, "'1' - toggle waveform display\n" );
     fprintf( stderr, "'2' - toggle lissajous display\n" );
     fprintf( stderr, "'3' - (also 'w') toggle wutrfall display\n" );
@@ -348,7 +348,6 @@ void help()
     fprintf( stderr, "'r' - toggle rainbow waterfall\n" );
     fprintf( stderr, "'b' - toggle waterfall moving backwards/forwards\n" );
     fprintf( stderr, "'x' - restart file playback (if applicable)\n" );
-    fprintf( stderr, "'p' - print current settings to terminal\n" );
     fprintf( stderr, "'m' - mute\n" );
     fprintf( stderr, "'j' - move spectrum + z\n" );
     fprintf( stderr, "'k' - move spectrum - z\n" );
@@ -369,7 +368,7 @@ void help()
     fprintf( stderr, "'Y' - increase delay for lissajous plot\n" );
     fprintf( stderr, " Up Arrow - rotate up\n" );
     fprintf( stderr, " Down Arrow  - rotate down\n" );
-    fprintf( stderr, " Left Arrow - rotate right\n" );
+    fprintf( stderr, " Left Arrow - rotate left\n" );
     fprintf( stderr, " Right Arrow  - rotate right\n" );
     fprintf( stderr, " '['  - Roll Left\n" );
     fprintf( stderr, " ']'  - Roll Right\n" );
@@ -1168,9 +1167,11 @@ void keyboardFunc( unsigned char key, int x, int y )
     break;
 
     case 'h':
+    case 'H':
         help();
     break;
-    case 's':
+    case 'f':
+    case 'F':
     {
         if( !g_fullscreen )
         {
@@ -1186,6 +1187,7 @@ void keyboardFunc( unsigned char key, int x, int y )
     }
     break;
     case 'm':
+    case 'M':
         g_mute = !g_mute;
         fprintf( stderr, "[Cymatic3d]: mute:%s\n", g_mute ? "ON" : "OFF" );
     break;
@@ -1220,8 +1222,8 @@ void keyboardFunc( unsigned char key, int x, int y )
             g_delay = g_buffer_size;
         fprintf( stderr, "[Cymatic3d]: lissdelay = %i\n", g_delay );
     break;
-    case 'f':
-    case 'F':
+    case 'p':
+    case 'P':
 	if (g_pause == false) {
 		g_freeze = g_pause = true;
 		g_freezecycle = false;
@@ -1299,7 +1301,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: backward:%s\n", g_backwards ? "ON" : "OFF" );
     break;
 
-    case 'p':
+    case 's':
         fprintf( stderr, "----------------------------------------------------\n" );
         fprintf( stderr, " current settings...\n" );
         fprintf( stderr, "----------------------------------------------------\n" );
