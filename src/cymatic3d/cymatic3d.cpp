@@ -155,7 +155,7 @@ GLfloat g_angle_y = 0.0f;
 GLfloat g_angle_z = 0.0f;
 GLfloat g_x_inc = 0.0f;
 GLfloat g_y_inc = 0.0f;
-GLfloat g_z_inc = 0.0f;
+GLfloat g_z_inc = 120.0f;
 GLfloat g_eye_x = 0.0f;
 GLfloat g_eye_y = 0.0f; // 0.2f for stria, otherwise 0
 GLfloat g_eye_z = 0.0f;
@@ -242,7 +242,7 @@ RMS * g_rms = NULL;
 Rolloff * g_rolloff = NULL;
 Rolloff * g_rolloff2 = NULL;
 
-// global flags with default...
+/// Set some defaults and globals
 // ---
 // print features to stdout
 GLboolean g_stdout = FALSE;
@@ -261,7 +261,8 @@ GLboolean g_draw_features = FALSE;
 // freeze display
 GLboolean g_freeze = FALSE;
 // Freeze-cycling
-GLboolean g_freezecycle = FALSE;
+GLboolean g_freezecycle = TRUE;
+GLboolean g_freezecycle_savestate = g_freezecycle;
 
 GLboolean g_freezehold_savestate;
 
@@ -322,8 +323,8 @@ GLfloat g_wf_delay_ratio = 1.0f / 3.0f;
 GLuint g_wf_delay = (GLuint)(g_depth * g_wf_delay_ratio + .5f);
 GLuint g_wf_index = 0;
 
-
-int freezecycle_skipframes = 1;
+// Set default
+int freezecycle_skipframes = 4;
 
 //-----------------------------------------------------------------------------
 // name: help()
@@ -339,7 +340,7 @@ void help()
     fprintf( stderr, "'h' - print this help message\n" );
     fprintf( stderr, "'s' - print current settings to console\n" );
     fprintf( stderr, "'f' - toggle fullscreen\n" );
-    fprintf( stderr, "'p' - pause frame! (can still rotate/scale)\n" );
+    fprintf( stderr, "'p' - pause frame (can still rotate/scale)\n" );
     fprintf( stderr, "'1' - toggle waveform display\n" );
     fprintf( stderr, "'2' - toggle lissajous display\n" );
     fprintf( stderr, "'3' - (also 'w') toggle wutrfall display\n" );
@@ -351,14 +352,14 @@ void help()
     fprintf( stderr, "'m' - mute\n" );
     fprintf( stderr, "'j' - move spectrum + z\n" );
     fprintf( stderr, "'k' - move spectrum - z\n" );
-    fprintf( stderr, "'u' - spacing more!\n" );
-    fprintf( stderr, "'i' - spacing less!\n" );
+    fprintf( stderr, "'u' - spacing more\n" );
+    fprintf( stderr, "'i' - spacing less\n" );
     fprintf( stderr, "'w' - scale DOWN the Waterfall\n" );
     fprintf( stderr, "'W' - scale UP the Waterfall\n" );
     fprintf( stderr, "'o' - scale DOWN the Oscope\n" );
     fprintf( stderr, "'O' - scale UP the Oscope\n" );
-    fprintf( stderr, "'-' - scale DOWN the Cymatic!\n" );
-    fprintf( stderr, "'=' - scale UP the Cymatic!\n" );
+    fprintf( stderr, "'-' - scale DOWN the Cymatic\n" );
+    fprintf( stderr, "'=' - scale UP the Cymatic\n" );
     fprintf( stderr, "'c' = LOWER log factor of spectrum display\n" );
     fprintf( stderr, "'v' = RAISE log factor of spectrum display\n" );
     fprintf( stderr, "      (log factor of 1.0 is linear display\n" );
@@ -366,13 +367,22 @@ void help()
     fprintf( stderr, "(shift)'v' - RAISE amount of viewable waveform\n" );
     fprintf( stderr, "'y' - decrease delay for lissajous plot\n" );
     fprintf( stderr, "'Y' - increase delay for lissajous plot\n" );
-    fprintf( stderr, " Up Arrow - rotate up\n" );
+    /// TODO: More and better help()
+    fprintf( stderr, "\n Up Arrow - rotate up\n" );
     fprintf( stderr, " Down Arrow  - rotate down\n" );
     fprintf( stderr, " Left Arrow - rotate left\n" );
     fprintf( stderr, " Right Arrow  - rotate right\n" );
     fprintf( stderr, " '['  - Roll Left\n" );
     fprintf( stderr, " ']'  - Roll Right\n" );
-    fprintf( stderr, "'q' - quit\n" );
+    fprintf( stderr, " '<'  - Previous Visualization\n" );
+    fprintf( stderr, " '>'  - Next Visualization\n" );
+    fprintf( stderr, " '/'  - Previous Render Type\n" );
+    fprintf( stderr, " '?'  - Next Render Type\n" );    
+    fprintf( stderr, " '|'  - Disable spin\n" );    
+    fprintf( stderr, " '\\'  - Enable spin\n" );    
+    fprintf( stderr, " 'HOME'  - Move camera back to default view\n" );
+    fprintf( stderr, " 'SPACEBAR'  - Hold to freeze the current view\n" );
+    fprintf( stderr, " 'q' or 'ESC' - Quit\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "\n" );
 }
@@ -398,7 +408,6 @@ void usage()
     fprintf( stderr, "example:\n" );
     fprintf( stderr, "    cymatic3d --fullscreen:ON --features:OFF --spacing:.05\n" );
     fprintf( stderr, "\n" );
-    fprintf( stderr, "cymatic3d version: 0.8 BETA\n" );
     fprintf( stderr, "\n" );
 }
 
@@ -411,7 +420,16 @@ void usage()
 //-----------------------------------------------------------------------------
 int main( int argc, char ** argv )
 {
-    // remember command line
+  
+	/// NVIDIA specific force V-Sync (super necessary)
+	putenv( (char *) "__GL_SYNC_TO_VBLANK=1" );
+	
+	/// TODO: Enable and test anisotropic
+	putenv( (char *)  "__GL_LOG_MAX_ANISO=8" );
+
+	// TODO: Enable and test  FSAA
+	putenv( (char *)  " __GL_FSAA_MODE=7" );
+
     GLboolean set_play = FALSE;
 
     // command line arguments
@@ -558,8 +576,6 @@ int main( int argc, char ** argv )
         //save working dir
         char * cwd = getcwd( NULL, 0 );
 #endif
-	/// NVIDIA specific force V-Sync (super necessary)
-	putenv( (char *) "__GL_SYNC_TO_VBLANK=1" );
         // initialize GLUT
         glutInit( &argc, argv );
 
@@ -929,8 +945,8 @@ void initialize_graphics()
     glEnable( GL_LIGHT1 );
  
     // blend? (Jeff's contribution)
-//    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glBlendFunc( GL_ONE, GL_DST_COLOR );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //glBlendFunc( GL_ONE, GL_DST_COLOR );
     glBlendEquation(GL_FUNC_ADD);
     glEnable( GL_BLEND );
 
@@ -1017,7 +1033,7 @@ void specialFunc( int key, int x, int y )
       case GLUT_KEY_HOME :
         g_x_inc = 0.0f;
         g_y_inc = 0.0f;
-        g_z_inc = 0.0f;
+        ///g_z_inc = 0.0f;
 	g_angle_x = 0.0f;
 	g_angle_y = 0.0f;
 	g_angle_z = 0.0f;
@@ -1025,6 +1041,45 @@ void specialFunc( int key, int x, int y )
 	g_eye_inc = 0.0f;
 	g_zoom = 0.0f;
 	break;
+	
+      // TODO: map function keys to something useful
+      /*
+      case GLUT_KEY_F1 :
+	break;
+	      
+      case GLUT_KEY_F2 :
+	break;
+	      
+      case GLUT_KEY_F3 :
+	break;
+	  
+      case GLUT_KEY_F4 :
+	break;
+	
+      case GLUT_KEY_F5 :
+	break;
+
+      case GLUT_KEY_F6 :
+	break;
+	
+      case GLUT_KEY_F7 :
+	break;
+
+      case GLUT_KEY_F8 :
+	break;
+	
+      case GLUT_KEY_F9 :
+	break;
+
+      case GLUT_KEY_F10 :
+	break;
+	
+      case GLUT_KEY_F11 :
+	break;
+
+      case GLUT_KEY_F12 :
+	break;
+      */
 	
       //default:
 	//g_inc = 0.0f;
@@ -1067,6 +1122,10 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_z_inc -= g_inc_val_kb;
         fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_z_inc );
 	break;    
+    case '|':
+        g_z_inc = 0;
+        fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_z_inc );
+	break;
     case '\\':
         g_z_inc = 120;
         fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_z_inc );
@@ -1079,25 +1138,26 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_zoom += g_inc_val_kb;
         fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_zoom );
 	break;
-    case '?':
+    case '>':
         visualization++;
 	if ( visualization > 30) visualization = 0;
         fprintf( stderr, "[Cymatic3d]: visualization:%d\n", visualization );
 	break;
-    case '/':
+    case '<':
         visualization--;
 	if ( visualization < 0) visualization = 0;
         fprintf( stderr, "[Cymatic3d]: visualization:%d\n", visualization );
-    case '<':
+	break;
+    case '/':
         rendertype--;
 	if ( rendertype < 0) rendertype = 0;
         fprintf( stderr, "[Cymatic3d]: rendertype:%d\n", rendertype );
 	break;
-    case '>':
+    case '?':
         rendertype++;
 	if ( rendertype > 8) rendertype = 0;
         fprintf( stderr, "[Cymatic3d]: rendertype:%d\n", rendertype );
-    break;
+	break;
     case 'j':
         g_z += g_dz;
         fprintf( stderr, "[Cymatic3d]: zpos:%f\n", g_z );
@@ -1131,8 +1191,10 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: features:%s\n", g_draw_features ? "ON" : "OFF" );
     break;
     case 'q':
-        ///exit( 0 );
-        fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
+    case 27: // ESC KEY
+        exit( 0 );
+	/// TODO: live-show mode commandline option
+        ///fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
     break;
     case 'o':
         g_time_scale *= .99f;
@@ -1226,10 +1288,12 @@ void keyboardFunc( unsigned char key, int x, int y )
     case 'P':
 	if (g_pause == false) {
 		g_freeze = g_pause = true;
+		g_freezecycle_savestate = g_freezecycle;
 		g_freezecycle = false;
+		fprintf( stderr, "[Cymatic3d]: Paused\n" );
 	} else {
-		fprintf( stderr, "[Cymatic3d]: free(ze)!\n" );
 		g_freeze = g_pause = false;
+		g_freezecycle = g_freezecycle_savestate;
 	}
     break;
     case 'z':
@@ -1275,7 +1339,11 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
     break;
     case '(':
-	freezecycle_skipframes =22;
+	freezecycle_skipframes = 22;
+        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    break;
+    case ')':
+	freezecycle_skipframes = 42;
         fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
     break;
     case 'v':
