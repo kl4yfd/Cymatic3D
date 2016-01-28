@@ -1683,24 +1683,56 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
         switch(visualization)
 	{
 	  case 0:
-	    	glVertex3f( x*x, y*y, 0.0f ); /// flash / strobe
-	    	glVertex3f( -x*x, y*y, 0.0f ); /// flash / strobe
-	    	glVertex3f( x*x, -y*y, 0.0f ); /// flash / strobe
-	    	glVertex3f( -x*x, -y*y, 0.0f ); /// flash / strobe
+		glVertex3f( x*x, y*y, 0.0f ); /// flash / strobe
+		glVertex3f( -x*x, y*y, 0.0f ); /// flash / strobe
+		glVertex3f( x*x, -y*y, 0.0f ); /// flash / strobe
+		glVertex3f( -x*x, -y*y, 0.0f ); /// flash / strobe
+		break;
+		
+	  case 1:
+		glVertex3f(x ,sin(y) , 0.0f ); /// plus flash
+		glVertex3f(-x ,sin(y) , 0.0f ); /// plus flash
 		break;
 		
 	  case 2:
-		glVertex3f( x, y, 0.0f ); /// square / lightning
-		glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// circular
+	    	glVertex2f( 2.0 * x, 2.0 * y );
+		glVertex2f( -2.0 * x, 2.0 * y );
+		glVertex2f( -2.0 * x, 2.0 *-y );
+		glVertex2f( 2.0 * x, 2.0 * -y );
 		break;
 		
 	  case 3:
-		glVertex3f( x*3.0f, sinf(y)*3.0f, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// WOW!
+		glVertex3f( x*x, y*y, 8*(x+y) );
+		glVertex3f( -x*x, y*y, 8*(x+y) );
+		glVertex3f( -x*x, -y*y, 8*(x+y) );
+		glVertex3f( x*x, -y*y, 8*(x+y) );
+		
+		glVertex3f( 2*x*x, 2*y*y, 5*(x+y) );
+		glVertex3f( 2*-x*x, 2*y*y, 5*(x+y) );
+		glVertex3f( -2*x*x, -2*y*y, 5*(x+y) );
+		glVertex3f( 2*x*x, -2*y*y, 5*(x+y) );
+		
+		glVertex3f( 3*x*x, 3*y*y, 3*(x+y) );
+		glVertex3f( 3*-x*x, 3*y*y, 3*(x+y) );
+		glVertex3f( -3*x*x, -3*y*y, 3*(x+y) );
+		glVertex3f( 3*x*x, -3*y*y, 3*(x+y) );
+		
+		glVertex3f( 5*x*x, 5*y*y, 2*(x+y) );
+		glVertex3f( 5*-x*x, 5*y*y, 2*(x+y) );
+		glVertex3f( -5*x*x, -5*y*y, 2*(x+y) );
+		glVertex3f( 5*x*x, -5*y*y, 2*(x+y) );
+		
+		glVertex3f( 8*x*x, 8*y*y, (x+y) );
+		glVertex3f( 8*-x*x, 8*y*y, (x+y) );
+		glVertex3f( -8*x*x, -8*y*y, (x+y) );
+		glVertex3f( 8*x*x, -8*y*y, (x+y) );
 		break;
   
 	  case 4:
-		glVertex3f( cosf(x), sin(y), 0.0f ); /// bowtie
-		glVertex3f( -cosf(x), -sin(y), 0.0f ); /// bowtie
+		glVertex2f( 2.0 * x + abs(x+y), 2.0 * y + abs(x+y) );
+		glVertex2f( -2.0 * x - abs(x+y), 2.0 * y + abs(x+y) );
+		glVertex2f( -2.0 * x - abs(x+y), 2.0 *-y - abs(x+y) );
+		glVertex2f( 2.0 * x + abs(x+y), 2.0 * -y - abs(x+y) );
 		break;
 		
 	  case 5:
@@ -1749,9 +1781,8 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		break;	  
 	  
 	  case 14:
-	    	glVertex3f(x ,sin(y) , 0.0f ); /// plus flash
-	    	glVertex3f(-x ,sin(y) , 0.0f ); /// plus flash
 		break;
+
 	  
 	  case 15: /// first 3D triangles :-)
 		glVertex3f(0.0f, 0.4f, 0.0f );
@@ -1823,17 +1854,13 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		break;
 		
 	  case 22:
-		glVertex2f( 2.0 * x, 2.0 * y );
-		glVertex2f( -2.0 * x, 2.0 * y );
-		glVertex2f( -2.0 * x, 2.0 *-y );
-		glVertex2f( 2.0 * x, 2.0 * -y );
+		glVertex3f( x, y, 0.0f ); /// square / lightning
+		glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// circular
 		break;
 	  
 	  case 23:
-		glVertex2f( 2.0 * x + abs(x+y), 2.0 * y + abs(x+y) );
-		glVertex2f( -2.0 * x - abs(x+y), 2.0 * y + abs(x+y) );
-		glVertex2f( -2.0 * x - abs(x+y), 2.0 *-y - abs(x+y) );
-		glVertex2f( 2.0 * x + abs(x+y), 2.0 * -y - abs(x+y) );
+		glVertex3f( cosf(x), sin(y), 0.0f ); /// bowtie
+		glVertex3f( -cosf(x), -sin(y), 0.0f ); /// bowtie
 		break;
 	  
 	  case 24:
@@ -1890,30 +1917,7 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		glVertex3f( 8*x*x, -8*y*y, 8*(x+y) );
 		break;	  
 	  case 26:
-		glVertex3f( x*x, y*y, 8*(x+y) );
-		glVertex3f( -x*x, y*y, 8*(x+y) );
-		glVertex3f( -x*x, -y*y, 8*(x+y) );
-		glVertex3f( x*x, -y*y, 8*(x+y) );
-		
-		glVertex3f( 2*x*x, 2*y*y, 5*(x+y) );
-		glVertex3f( 2*-x*x, 2*y*y, 5*(x+y) );
-		glVertex3f( -2*x*x, -2*y*y, 5*(x+y) );
-		glVertex3f( 2*x*x, -2*y*y, 5*(x+y) );
-		
-		glVertex3f( 3*x*x, 3*y*y, 3*(x+y) );
-		glVertex3f( 3*-x*x, 3*y*y, 3*(x+y) );
-		glVertex3f( -3*x*x, -3*y*y, 3*(x+y) );
-		glVertex3f( 3*x*x, -3*y*y, 3*(x+y) );
-		
-		glVertex3f( 5*x*x, 5*y*y, 2*(x+y) );
-		glVertex3f( 5*-x*x, 5*y*y, 2*(x+y) );
-		glVertex3f( -5*x*x, -5*y*y, 2*(x+y) );
-		glVertex3f( 5*x*x, -5*y*y, 2*(x+y) );
-		
-		glVertex3f( 8*x*x, 8*y*y, (x+y) );
-		glVertex3f( 8*-x*x, 8*y*y, (x+y) );
-		glVertex3f( -8*x*x, -8*y*y, (x+y) );
-		glVertex3f( 8*x*x, -8*y*y, (x+y) );
+		glVertex3f( x*3.0f, sinf(y)*3.0f, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// WOW!
 		break;
 		
 	  case 27:
