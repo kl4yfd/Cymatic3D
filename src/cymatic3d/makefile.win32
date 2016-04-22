@@ -2,7 +2,7 @@ CC=gcc
 CPP=g++
 INCLUDES=-I../marsyas/ -I/usr/include/directx/
 MARSYAS_DIR=../marsyas/
-CFLAGS=-D__WINDOWS_DS__ -D__WINDOWS_PTHREAD__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O3 -c
+CFLAGS=-D__WINDOWS_DS__ -D__WINDOWS_PTHREAD__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O3 -c -msse
 LIBS=-ldsound -ldxguid -lwinmm -lpthread -lopengl32 -lglu32 -lglut32
 
 TARGET=sndpeek

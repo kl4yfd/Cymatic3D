@@ -2,7 +2,7 @@ CC=gcc
 CPP=g++
 INCLUDES=-I../marsyas/
 MARSYAS_DIR=../marsyas/
-CFLAGS=-D__MACOSX_CORE__ $(INCLUDES) -O3 -c
+CFLAGS=-D__MACOSX_CORE__ $(INCLUDES) -O3 -msse3 -c
 LIBS=-framework CoreAudio -framework CoreMIDI -framework CoreFoundation\
 	-framework OpenGL -framework GLUT -framework Foundation \
 	-framework AppKit
