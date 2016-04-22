@@ -162,6 +162,7 @@ GLfloat g_eye_z = 0.0f;
 GLfloat g_eye_inc = 0.0f;
 GLfloat g_zoom = 0.0f;
 
+// Alpha
 // Dual-eye 3D variables
 GLfloat g_eye_separation = 0.05f;
 GLfloat g_eye_left = 0.0f - g_eye_separation;
@@ -183,7 +184,7 @@ GLint g_fft_size = SND_FFT_SIZE;
 int visualization = 0;
 
 // Set default rendertype
-int rendertype = 1;
+int rendertype = 0; // Dots / gl_points
 
 // real-time audio
 RtAudio * g_audio = NULL;
@@ -1608,11 +1609,11 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
     
     switch (rendertype) {
       case 0:
-	    glBegin( GL_LINE_STRIP ); ///  <-- ORIGINAL!
-	    break;
-
-      case 1:
 	    glPointSize(2.2f); glBegin( GL_POINTS );// looks awesome!
+	    break;
+	    
+      case 1:
+	    glBegin( GL_LINE_STRIP ); ///  <-- ORIGINAL!
 	    break;
 	    
       case 2:
@@ -1643,6 +1644,7 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 	    glBegin( GL_QUAD_STRIP );
 	    break;      
       
+      // GPU overload: overly-complex non-coherent shapes
       //case 9:
 	    //glBegin( GL_POLYGON );
 	    //break;    
@@ -1664,7 +1666,6 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
             y = buffer[i + channels-1] * g_lissajous_scale;
         }
         
-        // kl4yfd
         /// smoothing
         float tempx, tempy;
 	
@@ -1683,15 +1684,15 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
         switch(visualization)
 	{
 	  case 0:
-		glVertex3f( x*x, y*y, 0.0f ); /// flash / strobe
-		glVertex3f( -x*x, y*y, 0.0f ); /// flash / strobe
-		glVertex3f( x*x, -y*y, 0.0f ); /// flash / strobe
-		glVertex3f( -x*x, -y*y, 0.0f ); /// flash / strobe
+		glVertex3f( x*x, y*y, 0.0f );
+		glVertex3f( -x*x, y*y, 0.0f );
+		glVertex3f( x*x, -y*y, 0.0f );
+		glVertex3f( -x*x, -y*y, 0.0f );
 		break;
 		
 	  case 1:
-		glVertex3f(x ,sin(y) , 0.0f ); /// plus flash
-		glVertex3f(-x ,sin(y) , 0.0f ); /// plus flash
+		glVertex3f(x ,sin(y) , 0.0f );
+		glVertex3f(-x ,sin(y) , 0.0f );
 		break;
 		
 	  case 2:
@@ -1735,24 +1736,74 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		glVertex2f( 2.0 * x + abs(x+y), 2.0 * -y - abs(x+y) );
 		break;
 		
-	  case 5:
-		glVertex3f( x, y, -10.0f ); /// sunburst
-		glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// sunburst
+	  case 5:		
+		glVertex3f( x*x*x, y*y*y, x+y );
+		glVertex3f( -x*x*x, y*y*y, x+y );
+		glVertex3f( -x*x*x, -y*y*y, x+y );
+		glVertex3f( x*x*x, -y*y*y, x+y );
 		break;
 		
-	  case 6:
-		glVertex3f( x*3.0f, sinf(y)*3.0f, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// tube
-		glVertex3f( x, sinf(y), 0.0f ); /// tube
+	  case 6:	     
+		glVertex3f( x*x, y*y, x+y );
+		glVertex3f( -x*x, y*y, x+y );
+		glVertex3f( -x*x, -y*y, x+y );
+		glVertex3f( x*x, -y*y, x+y );
+		break;
+		  
+	  case 7:
+		glVertex3f( x*x, y*y, x+y );
+		glVertex3f( -x*x, y*y, x+y );
+		glVertex3f( -x*x, -y*y, x+y );
+		glVertex3f( x*x, -y*y, x+y );
+		
+		glVertex3f( 2*x*x, 2*y*y, 2*(x+y) );
+		glVertex3f( 2*-x*x, 2*y*y, 2*(x+y) );
+		glVertex3f( -2*x*x, -2*y*y, 2*(x+y) );
+		glVertex3f( 2*x*x, -2*y*y, 2*(x+y) );
+		
+		glVertex3f( 3*x*x, 3*y*y, 3*(x+y) );
+		glVertex3f( 3*-x*x, 3*y*y, 3*(x+y) );
+		glVertex3f( -3*x*x, -3*y*y, 3*(x+y) );
+		glVertex3f( 3*x*x, -3*y*y, 3*(x+y) );
+		
+		glVertex3f( 4*x*x, 4*y*y, 4*(x+y) );
+		glVertex3f( 4*-x*x, 4*y*y, 4*(x+y) );
+		glVertex3f( -4*x*x, -4*y*y, 4*(x+y) );
+		glVertex3f( 4*x*x, -4*y*y, 4*(x+y) );
+		
+		glVertex3f( 5*x*x, 5*y*y, 5*(x+y) );
+		glVertex3f( 5*-x*x, 5*y*y, 5*(x+y) );
+		glVertex3f( -5*x*x, -5*y*y, 5*(x+y) );
+		glVertex3f( 5*x*x, -5*y*y, 5*(x+y) );
 		break;
 	  
-	  case 7:
-	      	glVertex3f( tan(x), tan(y), 0.0f ); /// VERT / HORIZ lines on beat
-		break;
-		
 	  case 8:
-	    	glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// warp disk
-		glVertex3f(3* x, 3*y, -1 * sqrt( x*x + y*y ) * -g_lissajous_scale ); /// warp disk
+		glVertex3f( x*x, y*y, x+y );
+		glVertex3f( -x*x, y*y, x+y );
+		glVertex3f( -x*x, -y*y, x+y );
+		glVertex3f( x*x, -y*y, x+y );
+		
+		glVertex3f( 2*x*x, 2*y*y, 2*(x+y) );
+		glVertex3f( 2*-x*x, 2*y*y, 2*(x+y) );
+		glVertex3f( -2*x*x, -2*y*y, 2*(x+y) );
+		glVertex3f( 2*x*x, -2*y*y, 2*(x+y) );
+		
+		glVertex3f( 3*x*x, 3*y*y, 3*(x+y) );
+		glVertex3f( 3*-x*x, 3*y*y, 3*(x+y) );
+		glVertex3f( -3*x*x, -3*y*y, 3*(x+y) );
+		glVertex3f( 3*x*x, -3*y*y, 3*(x+y) );
+		
+		glVertex3f( 5*x*x, 5*y*y, 5*(x+y) );
+		glVertex3f( 5*-x*x, 5*y*y, 5*(x+y) );
+		glVertex3f( -5*x*x, -5*y*y, 5*(x+y) );
+		glVertex3f( 5*x*x, -5*y*y, 5*(x+y) );
+		
+		glVertex3f( 8*x*x, 8*y*y, 8*(x+y) );
+		glVertex3f( 8*-x*x, 8*y*y, 8*(x+y) );
+		glVertex3f( -8*x*x, -8*y*y, 8*(x+y) );
+		glVertex3f( 8*x*x, -8*y*y, 8*(x+y) );
 		break;
+
 		
 	  case 9:
 	    	glVertex3f( -x/2, y/2, 0.0f ); /// warp
@@ -1826,17 +1877,13 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		break;
 		
 	   case 19:
-		glVertex3f( x*x, y*y, x+y );
-		glVertex3f( -x*x, y*y, x+y );
-		glVertex3f( -x*x, -y*y, x+y );
-		glVertex3f( x*x, -y*y, x+y );
+		glVertex3f( x*3.0f, sinf(y)*3.0f, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// tube
+		glVertex3f( x, sinf(y), 0.0f ); /// tube
 		break;
 	   
 	   case 20:
-		glVertex3f( x*x*x, y*y*y, x+y );
-		glVertex3f( -x*x*x, y*y*y, x+y );
-		glVertex3f( -x*x*x, -y*y*y, x+y );
-		glVertex3f( x*x*x, -y*y*y, x+y );
+		glVertex3f( x, y, -10.0f ); /// sunburst
+		glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// sunburst
 		break;
 		
 	  case 21:
@@ -1862,60 +1909,16 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		glVertex3f( cosf(x), sin(y), 0.0f ); /// bowtie
 		glVertex3f( -cosf(x), -sin(y), 0.0f ); /// bowtie
 		break;
-	  
+		
 	  case 24:
-		glVertex3f( x*x, y*y, x+y );
-		glVertex3f( -x*x, y*y, x+y );
-		glVertex3f( -x*x, -y*y, x+y );
-		glVertex3f( x*x, -y*y, x+y );
-		
-		glVertex3f( 2*x*x, 2*y*y, 2*(x+y) );
-		glVertex3f( 2*-x*x, 2*y*y, 2*(x+y) );
-		glVertex3f( -2*x*x, -2*y*y, 2*(x+y) );
-		glVertex3f( 2*x*x, -2*y*y, 2*(x+y) );
-		
-		glVertex3f( 3*x*x, 3*y*y, 3*(x+y) );
-		glVertex3f( 3*-x*x, 3*y*y, 3*(x+y) );
-		glVertex3f( -3*x*x, -3*y*y, 3*(x+y) );
-		glVertex3f( 3*x*x, -3*y*y, 3*(x+y) );
-		
-		glVertex3f( 4*x*x, 4*y*y, 4*(x+y) );
-		glVertex3f( 4*-x*x, 4*y*y, 4*(x+y) );
-		glVertex3f( -4*x*x, -4*y*y, 4*(x+y) );
-		glVertex3f( 4*x*x, -4*y*y, 4*(x+y) );
-		
-		glVertex3f( 5*x*x, 5*y*y, 5*(x+y) );
-		glVertex3f( 5*-x*x, 5*y*y, 5*(x+y) );
-		glVertex3f( -5*x*x, -5*y*y, 5*(x+y) );
-		glVertex3f( 5*x*x, -5*y*y, 5*(x+y) );
+		glVertex3f( tan(x), tan(y), 0.0f ); /// VERT / HORIZ lines on beat
 		break;
-	  
+		
 	  case 25:
-		glVertex3f( x*x, y*y, x+y );
-		glVertex3f( -x*x, y*y, x+y );
-		glVertex3f( -x*x, -y*y, x+y );
-		glVertex3f( x*x, -y*y, x+y );
+	    	glVertex3f( x, y, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// warp disk
+		glVertex3f(3* x, 3*y, -1 * sqrt( x*x + y*y ) * -g_lissajous_scale ); /// warp disk
+		break;
 		
-		glVertex3f( 2*x*x, 2*y*y, 2*(x+y) );
-		glVertex3f( 2*-x*x, 2*y*y, 2*(x+y) );
-		glVertex3f( -2*x*x, -2*y*y, 2*(x+y) );
-		glVertex3f( 2*x*x, -2*y*y, 2*(x+y) );
-		
-		glVertex3f( 3*x*x, 3*y*y, 3*(x+y) );
-		glVertex3f( 3*-x*x, 3*y*y, 3*(x+y) );
-		glVertex3f( -3*x*x, -3*y*y, 3*(x+y) );
-		glVertex3f( 3*x*x, -3*y*y, 3*(x+y) );
-		
-		glVertex3f( 5*x*x, 5*y*y, 5*(x+y) );
-		glVertex3f( 5*-x*x, 5*y*y, 5*(x+y) );
-		glVertex3f( -5*x*x, -5*y*y, 5*(x+y) );
-		glVertex3f( 5*x*x, -5*y*y, 5*(x+y) );
-		
-		glVertex3f( 8*x*x, 8*y*y, 8*(x+y) );
-		glVertex3f( 8*-x*x, 8*y*y, 8*(x+y) );
-		glVertex3f( -8*x*x, -8*y*y, 8*(x+y) );
-		glVertex3f( 8*x*x, -8*y*y, 8*(x+y) );
-		break;	  
 	  case 26:
 		glVertex3f( x*3.0f, sinf(y)*3.0f, sqrt( x*x + y*y ) * -g_lissajous_scale ); /// WOW!
 		break;
