@@ -5,7 +5,7 @@
         All rights reserved.
         http://soundlab.cs.princeton.edu/
         
-   Copyright (c) 2014-2016 John A Phelps
+   Copyright (c) 2014-2016 John A. Phelps
 	https://github.com/kl4yfd/Cymatic3D
 	kl4yfd@gmail.com
 
@@ -26,7 +26,7 @@
 -----------------------------------------------------------------------------*/
 
 //-----------------------------------------------------------------------------
-// name: sndpeek.cpp
+// original name: sndpeek.cpp
 // desc: small real-time spectrum visualizer, originally implemented 
 //       by Ge Wang for the memex project and to entertain small children
 //       at parties.
@@ -42,7 +42,7 @@
 //          (FFT) CARL CMusic Distribution
 //          (Marsyas) George Tzanetakis (gtzan@cs.princeton.edu)
 //          (libsndfile) Erik de Castro Lopo
-// date: 11.28.2003 - ...
+// origin date: 11.28.2003 - ...
 //
 // usage: (type 'h' while running or see list of command line arguments)
 //-----------------------------------------------------------------------------
@@ -185,6 +185,8 @@ int visualization = 0;
 
 // Set default rendertype
 int rendertype = 0; // Dots / gl_points
+
+bool liveshow = false;
 
 // real-time audio
 RtAudio * g_audio = NULL;
@@ -335,7 +337,7 @@ void help()
 {
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "== CYMATIC3D ==\n" );
-    fprintf( stderr, " Copyright 2014-2016 John A Phelps\n " );
+    fprintf( stderr, " Copyright 2014-2016 John A. Phelps\n " );
     fprintf( stderr, " https://github.com/kl4yfd/Cymatic3D\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
     fprintf( stderr, "'h' - print this help message\n" );
@@ -379,8 +381,8 @@ void help()
     fprintf( stderr, " '>'  - Next Visualization\n" );
     fprintf( stderr, " '/'  - Previous Render Type\n" );
     fprintf( stderr, " '?'  - Next Render Type\n" );    
-    fprintf( stderr, " '|'  - Disable spin\n" );    
-    fprintf( stderr, " '\\'  - Enable spin\n" );    
+    fprintf( stderr, " '|'  - Disable spin vortex\n" );    
+    fprintf( stderr, " '\\'  - Enable spin vortex\n" );    
     fprintf( stderr, " 'HOME'  - Move camera back to default view\n" );
     fprintf( stderr, " 'SPACEBAR'  - Hold to freeze the current view\n" );
     fprintf( stderr, " 'q' or 'ESC' - Quit\n" );
@@ -400,14 +402,14 @@ void usage()
     fprintf( stderr, "usage: cymatic3d  --[options] [filename]\n" );
     fprintf( stderr, "  ON/OFF options: fullscreen|waveform|lissajous|waterfall|\n" );
     fprintf( stderr, "                  dB|features|fallcolors|backward|showtime|\n" );
-    fprintf( stderr, "                  freeze\n" );
+    fprintf( stderr, "                  freeze|live\n" );
     fprintf( stderr, "  number options: timescale|freqscale|lissscale|logfactor|\n" );
     fprintf( stderr, "                  spacing|zpos|dzpos|depth|preview|yview|\n" );
     fprintf( stderr, "                  rotatem|rotatek|begintime|ds\n" );
     fprintf( stderr, "   other options: nodisplay|print\n" );
     fprintf( stderr, "\n" );
     fprintf( stderr, "example:\n" );
-    fprintf( stderr, "    cymatic3d --fullscreen:ON --features:OFF --spacing:.05\n" );
+    fprintf( stderr, "    cymatic3d --live --fullscreen:ON --features:OFF --spacing:.05\n" );
     fprintf( stderr, "\n" );
     fprintf( stderr, "\n" );
 }
@@ -421,15 +423,22 @@ void usage()
 //-----------------------------------------------------------------------------
 int main( int argc, char ** argv )
 {
+    /// Set some environment variables that make the graphics look much better
   
-	/// NVIDIA specific force V-Sync (super necessary)
+	/// force V-Sync (super necessary)
 	putenv( (char *) "__GL_SYNC_TO_VBLANK=1" );
+	printf( "\nEnabling: Syncronize software to display refresh rate (VSYNC)" );
 	
-	/// TODO: Enable and test anisotropic
-	putenv( (char *)  "__GL_LOG_MAX_ANISO=8" );
+	/// TODO: test anisotropic
+	putenv( (char *)  "__GL_LOG_MAX_ANISO=0" );
+	//printf( "\nAnisotropic Filtering: 8X (mode 3)" );
+	printf( "\nDisabling: Anisotropic Filtering: 1X (mode 0)" );
 
-	// TODO: Enable and test  FSAA
-	putenv( (char *)  " __GL_FSAA_MODE=7" );
+	// TODO: test  FSAA
+	putenv( (char *)  " __GL_FSAA_MODE=4" );
+	printf( "\nEnabling: Full Scene Antialiasing:\n\t 2x Supersampling -or-\n\t 4x Bilinear Multisampling\n\t (FSAA mode 4 differs per graphics card)" );
+	
+	printf( "\n" );
 
     GLboolean set_play = FALSE;
 
@@ -447,6 +456,8 @@ int main( int argc, char ** argv )
             }
             else if( !strcmp( argv[i], "--sndout" ) )
                 g_sndout = 2;
+	    else if( !strcmp( argv[i], "--live" ) )
+                liveshow = true;
             else if( !strcmp( argv[i], "--nodisplay" ) )
                 g_display = FALSE;
             else if( !strcmp(argv[i], "--fullscreen") || !strcmp(argv[i], "--fullscreen:ON") )
@@ -1193,9 +1204,8 @@ void keyboardFunc( unsigned char key, int x, int y )
     break;
     case 'q':
     case 27: // ESC KEY
-        exit( 0 );
-	/// TODO: live-show mode commandline option
-        ///fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
+        if (liveshow) fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
+	else exit( 0 );
     break;
     case 'o':
         g_time_scale *= .99f;
