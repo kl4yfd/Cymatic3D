@@ -19,7 +19,7 @@ echo -e "\nHigh priority processing looks better, but requires root password."
 read -p "Do you wish to run Cymatic3D at high-priority? (Y/N) " yn
 echo
 case $yn in
-    [Yy]* ) sudo nice --adjustment=-15 ./src/cymatic3d/cymatic3d ;;
-    [Nn]* ) ./src/cymatic3d/cymatic3d ;;
+    [Yy]* ) sudo nice --adjustment=-15 ./src/cymatic3d/cymatic3d $1 ;;
+    [Nn]* ) ./src/cymatic3d/cymatic3d $1;;
     * ) echo "ERROR: Please answer Y or N.";;
 esac

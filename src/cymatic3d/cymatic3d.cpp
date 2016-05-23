@@ -344,32 +344,38 @@ void help()
     fprintf( stderr, "'s' - print current settings to console\n" );
     fprintf( stderr, "'f' - toggle fullscreen\n" );
     fprintf( stderr, "'p' - pause frame (can still rotate/scale)\n" );
-    fprintf( stderr, "'1' - toggle waveform display\n" );
-    fprintf( stderr, "'2' - toggle lissajous display\n" );
-    fprintf( stderr, "'3' - (also 'w') toggle wutrfall display\n" );
-    fprintf( stderr, "'4' - toggle feature extraction (broken)\n" );
-    fprintf( stderr, "'d' - toggle dB plot for spectrum\n" );
-    fprintf( stderr, "'r' - toggle rainbow waterfall\n" );
-    fprintf( stderr, "'b' - toggle waterfall moving backwards/forwards\n" );
-    fprintf( stderr, "'x' - restart file playback (if applicable)\n" );
-    fprintf( stderr, "'m' - mute\n" );
-    fprintf( stderr, "'j' - move spectrum + z\n" );
-    fprintf( stderr, "'k' - move spectrum - z\n" );
-    fprintf( stderr, "'u' - spacing more\n" );
-    fprintf( stderr, "'i' - spacing less\n" );
-    fprintf( stderr, "'w' - scale DOWN the Waterfall\n" );
-    fprintf( stderr, "'W' - scale UP the Waterfall\n" );
-    fprintf( stderr, "'o' - scale DOWN the Oscope\n" );
-    fprintf( stderr, "'O' - scale UP the Oscope\n" );
+    //fprintf( stderr, "'1' - toggle waveform display\n" );
+    //fprintf( stderr, "'2' - toggle lissajous display\n" );
+    //fprintf( stderr, "'3' - (also 'w') toggle wutrfall display\n" );
+    //fprintf( stderr, "'4' - toggle feature extraction (broken)\n" );
+    //fprintf( stderr, "'d' - toggle dB plot for spectrum\n" );
+    //fprintf( stderr, "'r' - toggle rainbow waterfall\n" );
+    //fprintf( stderr, "'b' - toggle waterfall moving backwards/forwards\n" );
+    //fprintf( stderr, "'x' - restart file playback (if applicable)\n" );
+    //fprintf( stderr, "'m' - mute\n" );
+    //fprintf( stderr, "'j' - move spectrum + z\n" );
+    //fprintf( stderr, "'k' - move spectrum - z\n" );
+    //fprintf( stderr, "'u' - spacing more\n" );
+    //fprintf( stderr, "'i' - spacing less\n" );
+    //fprintf( stderr, "'w' - scale DOWN the Waterfall\n" );
+    //fprintf( stderr, "'W' - scale UP the Waterfall\n" );
+    //fprintf( stderr, "'o' - scale DOWN the Oscope\n" );
+    //fprintf( stderr, "'O' - scale UP the Oscope\n" );
     fprintf( stderr, "'-' - scale DOWN the Cymatic\n" );
-    fprintf( stderr, "'=' - scale UP the Cymatic\n" );
-    fprintf( stderr, "'c' = LOWER log factor of spectrum display\n" );
-    fprintf( stderr, "'v' = RAISE log factor of spectrum display\n" );
-    fprintf( stderr, "      (log factor of 1.0 is linear display\n" );
-    fprintf( stderr, "(shift)'c' - LOWER amount of viewable waveform\n" );
-    fprintf( stderr, "(shift)'v' - RAISE amount of viewable waveform\n" );
-    fprintf( stderr, "'y' - decrease delay for lissajous plot\n" );
-    fprintf( stderr, "'Y' - increase delay for lissajous plot\n" );
+    fprintf( stderr, "'+' - scale UP the Cymatic\n" );
+    //fprintf( stderr, "'c' = LOWER log factor of spectrum display\n" );
+    //fprintf( stderr, "'v' = RAISE log factor of spectrum display\n" );
+    //fprintf( stderr, "      (log factor of 1.0 is linear display\n" );
+    //fprintf( stderr, "(shift)'c' - LOWER amount of viewable waveform\n" );
+    //fprintf( stderr, "(shift)'v' - RAISE amount of viewable waveform\n" );
+    fprintf( stderr, "'y' - decrease delay for Cymatic\n" );
+    fprintf( stderr, "'Y' - increase delay for Cymatic\n" );
+    fprintf( stderr, "'Z' - toggle frame delay\n" );
+    fprintf( stderr, "'1-8' - pre-programmed frame delays\n" );
+    fprintf( stderr, "'9' - DEcrease frame delay\n" );
+    fprintf( stderr, "'0' - INcrease frame delay\n" );
+
+
     /// TODO: More and better help()
     fprintf( stderr, "\n Up Arrow - rotate up\n" );
     fprintf( stderr, " Down Arrow  - rotate down\n" );
@@ -383,7 +389,7 @@ void help()
     fprintf( stderr, " '?'  - Next Render Type\n" );    
     fprintf( stderr, " '|'  - Disable spin vortex\n" );    
     fprintf( stderr, " '\\'  - Enable spin vortex\n" );    
-    fprintf( stderr, " 'HOME'  - Move camera back to default view\n" );
+    fprintf( stderr, " 'HOME'  - Move camera back to default & disable all rotations / rolls.\n" );
     fprintf( stderr, " 'SPACEBAR'  - Hold to freeze the current view\n" );
     fprintf( stderr, " 'q' or 'ESC' - Quit\n" );
     fprintf( stderr, "----------------------------------------------------\n" );
@@ -1151,11 +1157,13 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: zview:%f\n", g_zoom );
 	break;
     case '>':
+    case '.':
         visualization++;
 	if ( visualization > 30) visualization = 0;
         fprintf( stderr, "[Cymatic3d]: visualization:%d\n", visualization );
 	break;
     case '<':
+    case ',':
         visualization--;
 	if ( visualization < 0) visualization = 0;
         fprintf( stderr, "[Cymatic3d]: visualization:%d\n", visualization );
@@ -1186,6 +1194,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_space *= .98f;
         fprintf( stderr, "[Cymatic3d]: spacing:%f\n", g_space );
     break;
+    /* 
     case '1':
         g_waveform = !g_waveform;
         fprintf( stderr, "[Cymatic3d]: waveform:%s\n", g_waveform ? "ON" : "OFF" );
@@ -1194,14 +1203,17 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_wutrfall = !g_wutrfall;
         fprintf( stderr, "[Cymatic3d]: waterfall:%s\n", g_wutrfall ? "ON" : "OFF" );
     break;
+    */
     case 'd':
         g_usedb = !g_usedb;
         fprintf( stderr, "[Cymatic3d]: dB:%s\n", g_usedb ? "ON" : "OFF" );
     break;
+    /*
     case '4':
         g_draw_features = !g_draw_features;
         fprintf( stderr, "[Cymatic3d]: features:%s\n", g_draw_features ? "ON" : "OFF" );
     break;
+    */
     case 'q':
     case 27: // ESC KEY
         if (liveshow) fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
@@ -1271,10 +1283,12 @@ void keyboardFunc( unsigned char key, int x, int y )
             fprintf( stderr, "[Cymatic3d]: restarting file...\n" );
         }
     break;
+    /*
     case '2':
         g_lissajous = !g_lissajous;
         fprintf( stderr, "[Cymatic3d]: lissajous:%s\n", g_lissajous ? "ON" : "OFF" );
     break;
+    */
     case '-':
         g_lissajous_scale *= .95f;
         fprintf( stderr, "[Cymatic3d]: Cymatic Scale:%f\n", g_lissajous_scale );
@@ -1311,51 +1325,53 @@ void keyboardFunc( unsigned char key, int x, int y )
     case 'Z':
       	if (g_freezecycle == true) {
 		g_freezecycle = g_freeze = false;
-		fprintf( stderr, "[Cymatic3d]: Freeze Cycle OFF!\n" );
+		fprintf( stderr, "[Cymatic3d]: Frame Delay: OFF\n" );
 	} else {
 		g_freezecycle = !g_freezecycle;
-		fprintf( stderr, "[Cymatic3d]: Freeze Cycle ON!\n" );
+		fprintf( stderr, "[Cymatic3d]: Frame Delay: ON\n" );
 	}
     break;
-    case '!':
+    case '1':
 	freezecycle_skipframes = 1;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case '@':
+    case '2':
 	freezecycle_skipframes = 2;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case '#':
+    case '3':
 	freezecycle_skipframes = 3;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case '$':
+    case '4':
 	freezecycle_skipframes = 4;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case '%':
+    case '5':
 	freezecycle_skipframes = 5;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case '^':
-	freezecycle_skipframes = 8;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+    case '6':
+	freezecycle_skipframes = 6;
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case '&':
-	freezecycle_skipframes = 12;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
-    break;
-    case '*':
-	freezecycle_skipframes = 16;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
-    break;
-    case '(':
+    case '7':
 	freezecycle_skipframes = 22;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
-    case ')':
+    case '8':
 	freezecycle_skipframes = 42;
-        fprintf( stderr, "[Cymatic3d]: Skipframes:%d\n", freezecycle_skipframes );
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
+    break;
+    case '9':
+	freezecycle_skipframes -= 2;
+	if (freezecycle_skipframes < 0) freezecycle_skipframes = 0;
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
+    break;
+    case '0':
+	freezecycle_skipframes += 2;
+	if (freezecycle_skipframes > 1000) freezecycle_skipframes = 1000;
+        fprintf( stderr, "[Cymatic3d]: Frame Delay:%d\n", freezecycle_skipframes );
     break;
     case 'v':
         g_log_factor *= .98; //.99985;
@@ -1419,7 +1435,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         if ( key == 32 ) { // space bar
 		g_freezehold = true;
 		g_freeze = true;
-		fprintf( stderr, "[Cymatic3d]: freezehold ON\n");
+		//fprintf( stderr, "[Cymatic3d]: freezehold ON\n"); // disabled to prevent unneeded printf's filling console
 	}
 }
 
@@ -1694,10 +1710,10 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
         switch(visualization)
 	{
 	  case 0:
-		glVertex3f( x*x, y*y, 0.0f );
-		glVertex3f( -x*x, y*y, 0.0f );
-		glVertex3f( x*x, -y*y, 0.0f );
-		glVertex3f( -x*x, -y*y, 0.0f );
+	    	glVertex2f( 2.0 * x + abs(x+y), 2.0 * y + abs(x+y) );
+		glVertex2f( -2.0 * x - abs(x+y), 2.0 * y + abs(x+y) );
+		glVertex2f( -2.0 * x - abs(x+y), 2.0 *-y - abs(x+y) );
+		glVertex2f( 2.0 * x + abs(x+y), 2.0 * -y - abs(x+y) );
 		break;
 		
 	  case 1:
@@ -1740,11 +1756,12 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 		break;
   
 	  case 4:
-		glVertex2f( 2.0 * x + abs(x+y), 2.0 * y + abs(x+y) );
-		glVertex2f( -2.0 * x - abs(x+y), 2.0 * y + abs(x+y) );
-		glVertex2f( -2.0 * x - abs(x+y), 2.0 *-y - abs(x+y) );
-		glVertex2f( 2.0 * x + abs(x+y), 2.0 * -y - abs(x+y) );
+		glVertex3f( x*x, y*y, 0.0f );
+		glVertex3f( -x*x, y*y, 0.0f );
+		glVertex3f( x*x, -y*y, 0.0f );
+		glVertex3f( -x*x, -y*y, 0.0f );
 		break;
+
 		
 	  case 5:		
 		glVertex3f( x*x*x, y*y*y, x+y );
