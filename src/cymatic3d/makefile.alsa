@@ -3,7 +3,7 @@ CC=gcc
 CPP=g++
 INCLUDES=-I../marsyas/
 MARSYAS_DIR=../marsyas/
-CFLAGS=-D__LINUX_ALSA__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O3 -msse3 -c -msse
+CFLAGS=-D__LINUX_ALSA__ -D__LITTLE_ENDIAN__ $(INCLUDES) -O3 -c -msse
 LIBS=-L/usr/X11R6/lib -lglut -lGL -lGLU -lasound -lXmu -lX11 -lXext -lXi -lm -lsndfile -lpthread
 
 OBJS=chuck_fft.o RtAudio.o Thread.o cymatic3d.o Stk.o \
