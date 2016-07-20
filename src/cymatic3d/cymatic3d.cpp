@@ -329,6 +329,27 @@ GLuint g_wf_index = 0;
 // Set default
 int freezecycle_skipframes = 4;
 
+
+static float centroid_val, flux_val, rms_val, rolloff_val, rolloff2_val;
+
+/// Set default background and foreground colors
+int backgroundnumber = 0;
+int chakranumber = 1;
+
+/// 9-Chakra color system, which adds black and white (represents exessive grounding / un-grounding)
+static const float ChakraColor[9][3] = {
+	{0.0f, 0.0f, 0.0f},   // black
+	{1.0f, 0.0f, 0.0f},   // red
+	{1.0f, 0.64f, 0.0f},  // orange
+	{1.0f, 1.0f, 0.0f},   // yellow
+	{0.0f, 1.0f, 0.0f},   // green
+	{0.0f, 0.0f, 1.0f},   // blue
+	{0.29f, 0.0f, 0.51f}, // indigo
+	{0.93f, 0.51f ,0.93f},// violet
+	{1.0f, 1.0f, 1.0f}    // white
+};
+
+
 //-----------------------------------------------------------------------------
 // name: help()
 // desc: ...
@@ -415,7 +436,7 @@ void usage()
     fprintf( stderr, "   other options: nodisplay|print\n" );
     fprintf( stderr, "\n" );
     fprintf( stderr, "example:\n" );
-    fprintf( stderr, "    cymatic3d --live --fullscreen:ON --features:OFF --spacing:.05\n" );
+    fprintf( stderr, "    cymatic3d --live --fullscreen:ON \n" );
     fprintf( stderr, "\n" );
     fprintf( stderr, "\n" );
 }
@@ -1208,12 +1229,12 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_usedb = !g_usedb;
         fprintf( stderr, "[Cymatic3d]: dB:%s\n", g_usedb ? "ON" : "OFF" );
     break;
-    /*
-    case '4':
+    
+    case 'a':
         g_draw_features = !g_draw_features;
         fprintf( stderr, "[Cymatic3d]: features:%s\n", g_draw_features ? "ON" : "OFF" );
     break;
-    */
+    
     case 'q':
     case 27: // ESC KEY
         if (liveshow) fprintf( stderr, "\n LIVE SHOW MODE: QUITTING IS NOT AN OPTION! \n");
@@ -1243,6 +1264,8 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: time domain %i samples", g_buffer_size / g_time_view );
         fprintf( stderr, g_time_view == 1 ? " - (MAX)\n" : "\n" );
     break;
+/// Old code. Re-use key elsewhere    
+/*
     case 'C':
         if( g_time_view < 32 )
             g_time_view++;
@@ -1250,7 +1273,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: time domain %i samples", g_buffer_size / g_time_view );
         fprintf( stderr, g_time_view == 32 ? " - (MIN)\n" : "\n" );
     break;
-
+*/
     case 'h':
     case 'H':
         help();
@@ -1378,11 +1401,14 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_log_space = compute_log_spacing( g_fft_size / 2, g_log_factor );
         fprintf( stderr, "[Cymatic3d]: logfactor:%f\n", g_log_factor );
     break;
+/// Old code, re-use 'c' elsewhere
+/*    
     case 'c':
         g_log_factor /= .98; //.99985;
         g_log_space = compute_log_spacing( g_fft_size / 2, g_log_factor );
         fprintf( stderr, "[Cymatic3d]: logfactor:%f\n", g_log_factor );
     break;
+*/
     case 'r':
         g_rainbow = !g_rainbow;
         fprintf( stderr, "[Cymatic3d]: fallcolors:%s\n", g_rainbow ? "ON" : "OFF" );
@@ -1391,9 +1417,23 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_show_time = !g_show_time; 
         fprintf( stderr, "[Cymatic3d]: show time:%s\n", g_show_time ? "ON" : "OFF" ); 
     break;
+/*
     case 'b':
         g_backwards = !g_backwards;
         fprintf( stderr, "[Cymatic3d]: backward:%s\n", g_backwards ? "ON" : "OFF" );
+    break;
+*/
+    case 'C':
+    case 'c':
+	chakranumber += 1;
+	if (chakranumber > 8) chakranumber = 0;
+        fprintf( stderr, "[Cymatic3d]: chakranumber:%d\n", chakranumber );
+    break;    
+    case 'B':
+    case 'b':
+	backgroundnumber += 1;
+	if (backgroundnumber > 8) backgroundnumber = 0;
+	fprintf( stderr, "[Cymatic3d]: backgroundnumber:%d\n", backgroundnumber );
     break;
 
     case 's':
@@ -1570,13 +1610,8 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
     
     
   ///////// Smoothly color cycle the RGB values
+  /*
   /// RED
-/*
-  if (REDdir)
-	REDcolor += colorSTEP;
-  else 
-	REDcolor -= colorSTEP;
-*/
   if (REDdir)
 	REDcolor -= colorSTEP;
   else 
@@ -1616,14 +1651,49 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 	BLUEdir = !BLUEdir;
 	BLUEcolor = 0.0f;
   }
-  ///////// Smoothly color cycle the RGB values
+*/
+////////////  
   
-    glColor3f( REDcolor, GREENcolor, BLUEcolor );
+
+/// Super experimental code !!!
+/// When finished, aims to change the color of displayed cymatic image so there is a frequency-to-chakra mapping.
+/// The displayed color will be that of whatever chakra the dominant-frequency is closest to. 
+/*
+    float dominant_freq = ((rolloff_val / SND_MARSYAS_SIZE * g_srate / 2)+(rolloff2_val / SND_MARSYAS_SIZE * g_srate / 2)) / 2;
+    static const float error_margin_hz = 44;
+    printf("\n %.2f", dominant_freq);
+
+    if ( dominant_freq < 500 + error_margin_hz && dominant_freq > 500 - error_margin_hz ) {
+	REDcolor = 1.0f;
+	GREENcolor = 0.0f;
+	BLUEcolor = 0.0f;
+    } else if ( dominant_freq < 1000 + error_margin_hz && dominant_freq > 1000 - error_margin_hz ) {
+	REDcolor = 0.0f;
+	GREENcolor = 1.0f;
+	BLUEcolor = 0.0f;
+    }  else if ( dominant_freq < 1500 + error_margin_hz && dominant_freq > 1500 - error_margin_hz ) {
+	REDcolor = 0.0f;
+	GREENcolor = 0.0f;
+	BLUEcolor = 1.0f;
+    } else {
+      	REDcolor = 1.0f;
+	GREENcolor = 1.0f;
+	BLUEcolor = 1.0f;
+    }
+
+*/
+/// !!!
+    /// For color-cycling
+    ///glColor3f( REDcolor, GREENcolor, BLUEcolor );
+    
+    glColor3f(ChakraColor[chakranumber][0], ChakraColor[chakranumber][1], ChakraColor[chakranumber][2]);
+    
+    
+    /// White
     ///glColor3f( 1,1,1 ); 
     
-    /// Sets the background color to the complimentary color of the current
-    ///glClearColor( 1.0f-REDcolor, 1.0f-GREENcolor, 1.0f-BLUEcolor, 1.0f );
-
+    /// Sets the background color
+    glClearColor(ChakraColor[backgroundnumber][0], ChakraColor[backgroundnumber][1], ChakraColor[backgroundnumber][2], 1.0f);
     
     
     // save current matrix state
@@ -2023,7 +2093,7 @@ void displayFunc( )
     static const int LP = 4;
     static long int count = 0;
     static char str[1024];
-    static float centroid_val, flux_val, rms_val, rolloff_val, rolloff2_val;
+    ///Moved to global scope for freq-to-color mapping| static float centroid_val, flux_val, rms_val, rolloff_val, rolloff2_val;
     static fvec in(SND_MARSYAS_SIZE),
         centroid(1), flux(1), lpc(g_lpc->outSize()), mfcc(13), rms(1), rolloff(1),
         rolloff2(1), centroid_lp(LP), flux_lp(LP), rms_lp(LP), rolloff_lp(LP),
@@ -2249,6 +2319,11 @@ void displayFunc( )
             if( g_wf == g_depth - g_wf_delay )
                 g_starting = 0;
         }
+        
+        // The rolloff values are used for Frequency to chakra color mapping.
+        g_rolloff->process( in, rolloff );
+        g_rolloff2->process( in, rolloff2 );
+
 
         // calculate and draw features
         if( g_draw_features )
@@ -2268,10 +2343,12 @@ void displayFunc( )
                 g_flux->process( in, flux );
                 // rms
                 g_rms->process( in, rms );
-                // rolloff 1
-                g_rolloff->process( in, rolloff );
-                // rolloff 2
-                g_rolloff2->process( in, rolloff2 );
+                
+		//rolloff 1
+		// Moved to a higher-scope for frequency to color mapping
+                //g_rolloff->process( in, rolloff );
+		// rolloff 2
+                //g_rolloff2->process( in, rolloff2 );
         
                 // lowpass
                 centroid_lp(count % LP) = centroid(0);
@@ -2308,7 +2385,7 @@ void displayFunc( )
             glEnd();
         
             // print centroid
-            sprintf( str, "centroid = %.0f Hz", centroid_val / SND_MARSYAS_SIZE * g_srate / 2 );
+            sprintf( str, "centroid = %.0f Hz", centroid_val / 2 / SND_MARSYAS_SIZE * g_srate / 2 );
             draw_string( -1.7f + centroid_x, y-.14f, 0.0f + g_z, str, .4f );
 
             // rms value

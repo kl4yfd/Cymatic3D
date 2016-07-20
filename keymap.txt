@@ -1,0 +1,31 @@
+----------------------------------------------------
+'h' - print this help message
+'s' - print current settings to console
+'f' - toggle fullscreen
+'p' - pause frame (can still rotate/scale)
+'-' - scale DOWN the Cymatic
+'+' - scale UP the Cymatic
+'y' - decrease delay for Cymatic
+'Y' - increase delay for Cymatic
+'Z' - toggle frame delay
+'1-8' - pre-programmed frame delays
+'9' - DEcrease frame delay
+'0' - INcrease frame delay
+
+ Up Arrow - rotate up
+ Down Arrow  - rotate down
+ Left Arrow - rotate left
+ Right Arrow  - rotate right
+ '['  - Roll Left
+ ']'  - Roll Right
+ '<'  - Previous Visualization
+ '>'  - Next Visualization
+ '/'  - Previous Render Type
+ '?'  - Next Render Type
+ '|'  - Disable spin vortex
+ '\'  - Enable spin vortex
+ 'HOME'  - Move camera back to default & disable all rotations / rolls.
+ 'SPACEBAR'  - Hold to freeze the current view
+ 'q' or 'ESC' - Quit
+----------------------------------------------------
+
