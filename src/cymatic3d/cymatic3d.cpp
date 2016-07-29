@@ -336,6 +336,11 @@ static float centroid_val, flux_val, rms_val, rolloff_val, rolloff2_val;
 int backgroundnumber = 0;
 int chakranumber = 1;
 
+// Mode 0 == Color cycle, pastels
+// Mode 1 == Chakra colors (plus black and white)
+int colormode = 0;
+#define MAX_COLORMODES 1
+
 /// 9-Chakra color system, which adds black and white (represents exessive grounding / un-grounding)
 static const float ChakraColor[9][3] = {
 	{0.0f, 0.0f, 0.0f},   // black
@@ -1299,6 +1304,7 @@ void keyboardFunc( unsigned char key, int x, int y )
         g_mute = !g_mute;
         fprintf( stderr, "[Cymatic3d]: mute:%s\n", g_mute ? "ON" : "OFF" );
     break;
+    /*
     case 'x':
         if( g_sf )
         {
@@ -1306,6 +1312,7 @@ void keyboardFunc( unsigned char key, int x, int y )
             fprintf( stderr, "[Cymatic3d]: restarting file...\n" );
         }
     break;
+    */
     /*
     case '2':
         g_lissajous = !g_lissajous;
@@ -1423,6 +1430,11 @@ void keyboardFunc( unsigned char key, int x, int y )
         fprintf( stderr, "[Cymatic3d]: backward:%s\n", g_backwards ? "ON" : "OFF" );
     break;
 */
+    case 'X':
+    case 'x':
+	colormode += 1;
+	if ( colormode > MAX_COLORMODES ) colormode = 0;
+    break;
     case 'C':
     case 'c':
 	chakranumber += 1;
@@ -1610,7 +1622,7 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
     
     
   ///////// Smoothly color cycle the RGB values
-  /*
+
   /// RED
   if (REDdir)
 	REDcolor -= colorSTEP;
@@ -1651,7 +1663,7 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
 	BLUEdir = !BLUEdir;
 	BLUEcolor = 0.0f;
   }
-*/
+
 ////////////  
   
 
@@ -1682,12 +1694,12 @@ void drawLissajous( SAMPLE * stereobuffer, int len, int channels)
     }
 
 */
-/// !!!
-    /// For color-cycling
-    ///glColor3f( REDcolor, GREENcolor, BLUEcolor );
-    
-    glColor3f(ChakraColor[chakranumber][0], ChakraColor[chakranumber][1], ChakraColor[chakranumber][2]);
-    
+
+
+    if ( colormode == 1) // Chakra colors
+	glColor3f(ChakraColor[chakranumber][0], ChakraColor[chakranumber][1], ChakraColor[chakranumber][2]);
+    else // Default to smooth Pastels color cycle
+	glColor3f( REDcolor, GREENcolor, BLUEcolor );
     
     /// White
     ///glColor3f( 1,1,1 ); 
